@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.todo.nanny.audio.MediaStreamClient;
+import com.todo.nanny.services.ClientService;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -30,11 +31,13 @@ public class ClientActivity extends Activity {
     String ip;
     int port;
     MediaStreamClient msc;
+    Context ctx;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ctx = getApplicationContext();
         setContentView(R.layout.activity_main);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -57,6 +60,11 @@ public class ClientActivity extends Activity {
                     ip = editText1.getText().toString();
                     port = Integer.valueOf(editText2.getText().toString());
                     textView1.append("Starting client, " + ip + ":" + port + "\n");
+                    Intent i = new Intent(ctx, ClientService.class);
+                    i.putExtra("ip", ip);
+                    i.putExtra("port", port);
+                    startService(i);
+
 
 
                     msc = new MediaStreamClient(ClientActivity.this, ip, port);

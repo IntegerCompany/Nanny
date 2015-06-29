@@ -9,6 +9,8 @@ import android.util.Log;
  * Created by dmytro on 6/29/15.
  */
 public class ClientService extends Service{
+    int ip;
+
 
     final String TAG = "ClientService";
 
@@ -34,5 +36,9 @@ public class ClientService extends Service{
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
+    }
+
+    public void startClient(){
+
     }
 }
