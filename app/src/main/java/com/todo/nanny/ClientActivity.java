@@ -22,7 +22,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-public class MainActivity extends Activity {
+public class ClientActivity extends Activity {
     EditText editText1, editText2;
     Button button1;
     SeekBar volume;
@@ -56,11 +56,11 @@ public class MainActivity extends Activity {
                     button1.setText("Stop");
                     ip = editText1.getText().toString();
                     port = Integer.valueOf(editText2.getText().toString());
+                    textView1.append("Starting client, " + ip + ":" + port + "\n");
 
-                    if(!ip.equals("0.0.0.0")) {
-                        textView1.append("Starting client, " + ip + ":" + port + "\n");
-                        msc = new MediaStreamClient(MainActivity.this, ip, port);
-                    }
+
+                    msc = new MediaStreamClient(ClientActivity.this, ip, port);
+
                 }
                 else if(button1.getText().toString().equals("Stop")) {
                     button1.setText("Start");

@@ -68,7 +68,7 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
                 startActivity(new Intent(getApplication(),ServerActivity.class));
                 break;
             case R.id.btn_go_client:
-                startActivity(new Intent(getApplication(),MainActivity.class));
+                startActivity(new Intent(getApplication(),ClientActivity.class));
                 break;
         }
     }
