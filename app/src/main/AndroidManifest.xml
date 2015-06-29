@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.todo.nanny" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,6 +13,14 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".ServerActivity"
+            android:label="@string/title_activity_server" >
+        </activity>
+        <activity
+            android:name=".LauncherActivity"
+            android:label="@string/title_activity_launcher" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

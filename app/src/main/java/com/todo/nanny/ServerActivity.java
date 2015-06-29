@@ -16,19 +16,21 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.todo.nanny.audio.MediaStreamClient;
+import com.todo.nanny.audio.MediaStreamServer;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-public class MainActivity extends Activity {
+public class ServerActivity extends Activity {
     EditText editText1, editText2;
     Button button1;
     SeekBar volume;
     TextView textView1;
     String ip;
     int port;
+    MediaStreamServer mss;
     MediaStreamClient msc;
 
     /** Called when the activity is first created. */
@@ -44,7 +46,7 @@ public class MainActivity extends Activity {
         editText2 = (EditText) findViewById(R.id.editText2);
         button1 = (Button) findViewById(R.id.button1);
         volume = (SeekBar) findViewById(R.id.volume);
-        volume.setMax(200);
+        volume.setMax(100);
         volume.setProgress(100);
         textView1 = (TextView) findViewById(R.id.textView1);
         textView1.append("Current IP: "+getLocalIpAddress()+"\n");
@@ -57,17 +59,15 @@ public class MainActivity extends Activity {
                     ip = editText1.getText().toString();
                     port = Integer.valueOf(editText2.getText().toString());
 
-                    if(!ip.equals("0.0.0.0")) {
-                        textView1.append("Starting client, " + ip + ":" + port + "\n");
-                        msc = new MediaStreamClient(MainActivity.this, ip, port);
-                    }
+                    textView1.append("Starting server\n");
+                    mss = new MediaStreamServer(ServerActivity.this, port);
+
                 }
                 else if(button1.getText().toString().equals("Stop")) {
                     button1.setText("Start");
-
-                    if(msc!=null) {
-                        textView1.append("Stopping client\n");
-                        msc.stop();
+                    if(mss!=null) {
+                        textView1.append("Stopping server\n");
+                        mss.stop();
                     }
                 }
             }
