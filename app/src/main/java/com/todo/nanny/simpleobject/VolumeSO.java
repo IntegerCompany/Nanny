@@ -14,6 +14,10 @@ public class VolumeSO {
 
     }
 
+    public VolumeSO() {
+
+    }
+
     public int getVolume() {
         return volume;
     }
