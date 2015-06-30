@@ -54,7 +54,7 @@ public class ServerService extends Service {
 
     public void startServer(int port){
         mss = new MediaStreamServer(ServerService.this, port);
-        startObjectTransferingServer(port);
+        startObjectTransferingServer(port+1);
 
     }
 

@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import com.todo.nanny.ClientActivity;
 import com.todo.nanny.audio.MediaStreamClient;
+import com.todo.nanny.simpleobject.SimpleObject;
 
 /**
  * Created by dmytro on 6/29/15.
@@ -22,7 +23,7 @@ public class ClientService extends Service {
     final String TAG = "ClientService";
     Client client;
     Connection clientConnection;
-    
+
 
     MediaStreamClient msc;
 
@@ -70,7 +71,7 @@ public class ClientService extends Service {
         Log.d(TAG, String.valueOf(port));
         Log.d(TAG, ip);
         msc = new MediaStreamClient(ClientService.this, ip, port);
-        startDataTransferingClient(ip, port);
+        startDataTransferingClient(ip, port + 1);
     }
 
     public void stopClient(){
@@ -90,8 +91,8 @@ public class ClientService extends Service {
     }
 
     public void startDataTransferingClient(final String ip, final int port) {
-
         client = new Client();
+        client.getKryo().register(SimpleObject.class);
         new Thread(client).start();
         new Thread(new Runnable() {
             @Override
@@ -109,6 +110,9 @@ public class ClientService extends Service {
             public void connected(Connection connection) {
                 super.connected(connection);
                 clientConnection = connection;
+                SimpleObject simpleObject = new SimpleObject();
+                simpleObject.setValue("HelloWorld");
+                clientConnection.sendTCP(simpleObject);
                 Log.d("ClientService", "Client: connected to server");
             }
 
@@ -129,5 +133,5 @@ public class ClientService extends Service {
 
 
     }
-    
+
 }
