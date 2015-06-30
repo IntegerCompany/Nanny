@@ -6,6 +6,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -24,8 +25,9 @@ public class MediaStreamServer {
 		recBufSize = 4096;
 		audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, recBufSize);
 
-		try { sockfd = new ServerSocket(port); }
-		catch (Exception e) {
+		try { sockfd = new ServerSocket(port);
+		sockfd.setReuseAddress(true);
+		}catch (Exception e) {
 			e.printStackTrace();
 			Intent intent = new Intent()
 				.setAction("tw.rascov.MediaStreamer.ERROR")
@@ -57,6 +59,11 @@ public class MediaStreamServer {
 							.setAction("tw.rascov.MediaStreamer.ERROR")
 							.putExtra("msg", e.toString());
 						ctx.sendBroadcast(intent);
+                        try {
+                            sockfd.close();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
 						break;
 					}
 
