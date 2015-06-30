@@ -29,9 +29,10 @@
         </activity>
         
         <service
-            android:name=".services.ClientService">
+             android:name=".services.ClientService">
 
         </service>
+
     </application>
 
 </manifest>
