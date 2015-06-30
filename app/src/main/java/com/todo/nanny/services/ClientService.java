@@ -70,7 +70,7 @@ public class ClientService extends Service {
         Log.d(TAG, String.valueOf(port));
         Log.d(TAG, ip);
         msc = new MediaStreamClient(ClientService.this, ip, port);
-        startDataTransferingClient();
+        startDataTransferingClient(ip, port);
     }
 
     public void stopClient(){
@@ -89,7 +89,7 @@ public class ClientService extends Service {
         }
     }
 
-    public void startDataTransferingClient() {
+    public void startDataTransferingClient(final String ip, final int port) {
 
         client = new Client();
         new Thread(client).start();
@@ -97,7 +97,7 @@ public class ClientService extends Service {
             @Override
             public void run() {
                 try {
-                    client.connect(5000, "192.168.1.167", ServerService.DATA_TRANSFER_PORT);
+                    client.connect(5000, ip, port);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

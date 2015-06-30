@@ -24,7 +24,7 @@ public class ServerService extends Service {
     Listener listener;
     MediaStreamServer mss;
 
-    public final static int DATA_TRANSFER_PORT = 5679;
+
 
     private String ip;
     private int port;
@@ -54,9 +54,11 @@ public class ServerService extends Service {
 
     public void startServer(int port){
         mss = new MediaStreamServer(ServerService.this, port);
+        startObjectTransferingServer(port);
+
     }
 
-    public void startObjectTransferingServer() {
+    public void startObjectTransferingServer(int port) {
         try {
             server = new Server();
             server.getKryo().register(SimpleObject.class);
@@ -96,11 +98,7 @@ public class ServerService extends Service {
 
     }
 
-    public void initNetworkSettings(String ip, int port) {
-        this.ip = ip;
-        this.port = port;
-        startObjectTransferingServer();
-    }
+
 
     public void stopWorking() {
         server.stop();
