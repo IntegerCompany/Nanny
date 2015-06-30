@@ -4,6 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/container_main"/>
+
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/ok_main_button"
         android:layout_width="wrap_content"
@@ -16,9 +21,14 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/container_main"/>
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/ear_sleeping_button"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ear_with_shadow"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
 
 </RelativeLayout>

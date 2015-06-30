@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -29,6 +30,7 @@ public class ServerActivity extends Activity {
     MediaStreamClient msc;
 
     FloatingActionButton button1;
+    ImageButton imageButton;
     View start_view, new_view;
 
     /** Called when the activity is first created. */
@@ -44,9 +46,15 @@ public class ServerActivity extends Activity {
         addView(start_view);
 
 
+        imageButton = (ImageButton) findViewById(R.id.ear_sleeping_button);
+        imageButton.setScaleX(0.01f);
+        imageButton.setScaleY(0.01f);
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         button1 = (FloatingActionButton) findViewById(R.id.ok_main_button);
         button1.setTitle("Start");
+
+
 
         WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
         String ipAddress = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
@@ -109,6 +117,13 @@ public class ServerActivity extends Activity {
         }
         removeView(currentView);
         parent.addView(newView);
+
+        button1.animate().translationY(400f);
+
+        imageButton.setVisibility(View.VISIBLE);
+        imageButton.animate().scaleX(1f);
+        imageButton.animate().scaleY(1f);
+
         Log.i("Replacing", " View");
     }
     public ViewGroup getMyParentView() {
