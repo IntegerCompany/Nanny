@@ -96,6 +96,7 @@ public class ClientService extends Service {
     public void startDataTransferingClient(final String ip) {
         client = new Client();
         client.getKryo().register(SimpleObject.class);
+        client.getKryo().register(VolumeSO.class);
         new Thread(client).start();
         new Thread(new Runnable() {
             @Override

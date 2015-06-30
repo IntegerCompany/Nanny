@@ -17,6 +17,7 @@ import com.todo.nanny.LauncherActivity;
 import com.todo.nanny.ServerActivity;
 import com.todo.nanny.audio.MediaStreamServer;
 import com.todo.nanny.delegates.ServerDelegate;
+import com.todo.nanny.simpleobject.Message;
 import com.todo.nanny.simpleobject.SimpleObject;
 import com.todo.nanny.simpleobject.VolumeSO;
 
@@ -62,7 +63,7 @@ public class ServerService extends Service {
     }
 
     public void startServer(){
-        //mss = new MediaStreamServer(ServerService.this, PORT);
+
         startObjectTransferingServer();
         start();
 
@@ -73,7 +74,7 @@ public class ServerService extends Service {
             public void run() {
                 int aml = getAmplitude();
 
-                if(aml<100){
+                if(aml>100){
                     sendAlarm(aml);
                 }
                 Log.d("ServerService", "" + aml);
@@ -115,6 +116,23 @@ public class ServerService extends Service {
 //                        it.setComponent(new ComponentName(getApplicationContext().getPackageName(), ServerActivity.class.getName()));
                         it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         getApplicationContext().startActivity(it);
+                    }else if(object instanceof Message){
+                        Message message = (Message) object;
+                        int code = message.getCode();
+                        switch (code){
+                            case 1: {
+                                startVoiceTransfering();
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(serverConnection!= null && serverConnection.isConnected()){
+                                            serverConnection.sendTCP(new Message(2));
+                                        }
+                                    }
+                                }).start();
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -129,6 +147,10 @@ public class ServerService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void startVoiceTransfering(){
+        mss = new MediaStreamServer(ServerService.this, PORT);
     }
 
 

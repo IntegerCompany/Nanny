@@ -56,7 +56,7 @@ public class ClientActivity extends Activity {
                     .setMessage("Do you want to hear your baby?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            // continue with delete
+
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -156,6 +156,7 @@ public class ClientActivity extends Activity {
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction("tw.rascov.MediaStreamer.ERROR");
+        filter.addAction("com.todo.nanny.alarm");
         registerReceiver(receiver, filter);
     }
 
