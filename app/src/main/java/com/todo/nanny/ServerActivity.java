@@ -31,12 +31,12 @@ import java.util.Enumeration;
 
 public class ServerActivity extends Activity {
     private static final String LOG_TAG = "ServerActivity";
-    EditText editText1, editText2;
+    EditText editText1;
     Button button1;
     SeekBar volume;
     TextView textView1;
     String ip;
-    int port;
+
     MediaStreamServer mss;
     MediaStreamClient msc;
     
@@ -54,7 +54,6 @@ public class ServerActivity extends Activity {
 
         // initialize layout variables
         editText1 = (EditText) findViewById(R.id.editText1);
-        editText2 = (EditText) findViewById(R.id.editText2);
         button1 = (Button) findViewById(R.id.button1);
         volume = (SeekBar) findViewById(R.id.volume);
         volume.setMax(100);
@@ -68,11 +67,10 @@ public class ServerActivity extends Activity {
                 if(button1.getText().toString().equals("Start")) {
                     button1.setText("Stop");
                     ip = editText1.getText().toString();
-                    port = Integer.valueOf(editText2.getText().toString());
 
                     textView1.append("Starting server\n");
 
-                    serverService.startServer(port);
+                    serverService.startServer();
 
 
                 }

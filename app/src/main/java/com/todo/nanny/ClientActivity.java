@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.services.ClientService;
+import com.todo.nanny.services.ServerService;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -28,12 +29,11 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 public class ClientActivity extends Activity {
-    EditText editText1, editText2;
+    EditText editText1;
     Button button1;
     SeekBar volume;
     TextView textView1;
     String ip;
-    int port;
     MediaStreamClient msc;
     Context ctx;
     boolean bound = false;
@@ -60,7 +60,6 @@ public class ClientActivity extends Activity {
 
         // initialize layout variables
         editText1 = (EditText) findViewById(R.id.editText1);
-        editText2 = (EditText) findViewById(R.id.editText2);
         button1 = (Button) findViewById(R.id.button1);
         volume = (SeekBar) findViewById(R.id.volume);
         volume.setMax(200);
@@ -92,11 +91,9 @@ public class ClientActivity extends Activity {
                 if(button1.getText().toString().equals("Start")) {
                     button1.setText("Stop");
                     ip = editText1.getText().toString();
-                    port = Integer.valueOf(editText2.getText().toString());
-                    textView1.append("Starting client, " + ip + ":" + port + "\n");
+                    textView1.append("Starting client, " + ip + ":" + ServerService.PORT + "\n");
                     intent.putExtra("ip", ip);
-                    intent.putExtra("port", port);
-                    clientService.startClient(ip, port);
+                    clientService.startClient(ip);
                 }
                 else if(button1.getText().toString().equals("Stop")) {
                     button1.setText("Start");

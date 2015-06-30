@@ -18,17 +18,13 @@ import java.io.IOException;
 
 public class ServerService extends Service {
 
+    public static final int PORT = 54792;
+
     ServerBinder serverBinder = new ServerBinder();
     Connection serverConnection;
     Server server;
     Listener listener;
     MediaStreamServer mss;
-
-
-
-    private String ip;
-    private int port;
-
 
     public ServerService() {
     }
@@ -52,18 +48,20 @@ public class ServerService extends Service {
         return serverBinder;
     }
 
-    public void startServer(int port){
-        mss = new MediaStreamServer(ServerService.this, port);
-        startObjectTransferingServer(port);
+    public void startServer(){
+        mss = new MediaStreamServer(ServerService.this, PORT);
+        startObjectTransferingServer();
+
 
     }
 
-    public void startObjectTransferingServer(int port) {
+    public void startObjectTransferingServer() {
         try {
             server = new Server();
             server.getKryo().register(SimpleObject.class);
             server.start();
-            server.bind(port);
+            Log.d("ServerService", "Port: " + (PORT + 1));
+            server.bind(PORT + 1);
             server.addListener(new Listener() {
                 @Override
                 public void connected(Connection connection) {

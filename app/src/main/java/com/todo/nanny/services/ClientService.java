@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import com.todo.nanny.ClientActivity;
 import com.todo.nanny.audio.MediaStreamClient;
+import com.todo.nanny.simpleobject.SimpleObject;
 
 /**
  * Created by dmytro on 6/29/15.
@@ -65,12 +66,12 @@ public class ClientService extends Service {
         Log.d(TAG, "onDestroy");
     }
 
-    public void startClient(String ip, int port){
+    public void startClient(String ip){
         Log.d(TAG, "startClient");
-        Log.d(TAG, String.valueOf(port));
+        Log.d(TAG, String.valueOf(ServerService.PORT));
         Log.d(TAG, ip);
-        msc = new MediaStreamClient(ClientService.this, ip, port);
-        startDataTransferingClient(ip, port);
+        msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
+        startDataTransferingClient(ip);
     }
 
     public void stopClient(){
@@ -89,15 +90,15 @@ public class ClientService extends Service {
         }
     }
 
-    public void startDataTransferingClient(final String ip, final int port) {
-
+    public void startDataTransferingClient(final String ip) {
         client = new Client();
+        client.getKryo().register(SimpleObject.class);
         new Thread(client).start();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    client.connect(5000, ip, port);
+                    client.connect(5000, ip, ServerService.PORT + 1);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -109,6 +110,9 @@ public class ClientService extends Service {
             public void connected(Connection connection) {
                 super.connected(connection);
                 clientConnection = connection;
+                SimpleObject simpleObject = new SimpleObject();
+                simpleObject.setValue("HelloWorld");
+                clientConnection.sendTCP(simpleObject);
                 Log.d("ClientService", "Client: connected to server");
             }
 
