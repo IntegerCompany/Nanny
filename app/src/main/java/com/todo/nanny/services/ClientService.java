@@ -15,6 +15,7 @@ import java.io.IOException;
 import com.todo.nanny.ClientActivity;
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.simpleobject.SimpleObject;
+import com.todo.nanny.simpleobject.VolumeSO;
 
 /**
  * Created by dmytro on 6/29/15.
@@ -122,7 +123,7 @@ public class ClientService extends Service {
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
                 if(object instanceof Integer){
-                    Log.d("ClientService","Volume: "+ (Integer)object);
+                    Log.d("ClientService","Volume: "+ ((VolumeSO)object).getVolume());
                 }
             }
 

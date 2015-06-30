@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,6 +26,7 @@ import com.todo.nanny.audio.MediaStreamServer;
 import com.todo.nanny.services.ClientService;
 import com.todo.nanny.services.ServerService;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -44,9 +47,10 @@ public class ServerActivity extends Activity {
     private boolean bound;
 
 
+
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -59,28 +63,35 @@ public class ServerActivity extends Activity {
         volume.setMax(100);
         volume.setProgress(100);
         textView1 = (TextView) findViewById(R.id.textView1);
-        textView1.append("Current IP: "+getLocalIpAddress()+"\n");
+        textView1.append("Current IP: " + getLocalIpAddress() + "\n");
 
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(button1.getText().toString().equals("Start")) {
+                if (button1.getText().toString().equals("Start")) {
                     button1.setText("Stop");
                     ip = editText1.getText().toString();
 
                     textView1.append("Starting server\n");
 
+
+
+
                     serverService.startServer();
 
 
-                }
-                else if(button1.getText().toString().equals("Stop")) {
+                } else if (button1.getText().toString().equals("Stop")) {
                     button1.setText("Start");
                     serverService.stopWorking();
+
+
 
                 }
             }
         });
+
+
+
 
         volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -150,4 +161,12 @@ public class ServerActivity extends Activity {
         return null;
     }
 
+
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
 }

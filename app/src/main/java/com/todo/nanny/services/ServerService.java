@@ -18,19 +18,21 @@ import com.todo.nanny.ServerActivity;
 import com.todo.nanny.audio.MediaStreamServer;
 import com.todo.nanny.delegates.ServerDelegate;
 import com.todo.nanny.simpleobject.SimpleObject;
+import com.todo.nanny.simpleobject.VolumeSO;
 
 import java.io.IOException;
 
 public class ServerService extends Service {
 
     public static final int PORT = 54792;
-    private MediaRecorder mRecorder = null;
+
 
     ServerBinder serverBinder = new ServerBinder();
     Connection serverConnection;
     Server server;
     Listener listener;
     MediaStreamServer mss;
+    private MediaRecorder mRecorder = null;
 
     public ServerService() {
     }
@@ -38,6 +40,7 @@ public class ServerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
         start();
 
         final Handler handler;
@@ -47,17 +50,17 @@ public class ServerService extends Service {
             public void run() {
                 int aml = getAmplitude();
 
-                if(aml > 30000){
-                    if(serverConnection.isConnected()){
-                        serverConnection.sendTCP(new Integer(aml));
-                    }
-                }
+
+                    sendAlarm(aml);
+                    Log.d("ServerService", "" + aml);
+
 
 
                 handler.postDelayed(this, 1000);
             }
         };
         handler.postDelayed(r, 1000);
+
     }
 
 
@@ -75,7 +78,7 @@ public class ServerService extends Service {
     }
 
     public void startServer(){
-        mss = new MediaStreamServer(ServerService.this, PORT);
+        //mss = new MediaStreamServer(ServerService.this, PORT);
         startObjectTransferingServer();
 
 
@@ -85,7 +88,7 @@ public class ServerService extends Service {
         try {
             server = new Server();
             server.getKryo().register(SimpleObject.class);
-            server.getKryo().register(Integer.class);
+            server.getKryo().register(VolumeSO.class);
             server.start();
             Log.d("ServerService", "Port: " + (PORT + 1));
             server.bind(PORT + 1);
@@ -104,10 +107,10 @@ public class ServerService extends Service {
                     Log.d("ServerService", "Server: we have this object from client " + object.getClass().getName());
                     if (object instanceof SimpleObject){
                         Log.d("ServerService", "Yes! its Simple object with: "  + ((SimpleObject) object).getValue());
-                        Intent it = new Intent("intent.my.action");
-                        it.setComponent(new ComponentName(getApplicationContext().getPackageName(), ServerActivity.class.getName()));
-                        it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        getApplicationContext().startActivity(it);
+//                        Intent it = new Intent("intent.my.action");
+//                        it.setComponent(new ComponentName(getApplicationContext().getPackageName(), ServerActivity.class.getName()));
+//                        it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        getApplicationContext().startActivity(it);
                     }
                 }
 
@@ -122,8 +125,6 @@ public class ServerService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -134,6 +135,7 @@ public class ServerService extends Service {
         if(mss!=null) {
             mss.stop();
         }
+
         stop();
     }
 
@@ -143,6 +145,18 @@ public class ServerService extends Service {
         }
     }
 
+    public void sendAlarm(final int volume) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(serverConnection!= null && serverConnection.isConnected()){
+                    serverConnection.sendTCP(new VolumeSO(volume));
+                    Log.d("ServerService", "" + 1);
+                }
+            }
+        }).start();
+
+    }
 
     public void start() {
         if (mRecorder == null) {
@@ -175,6 +189,4 @@ public class ServerService extends Service {
             return 0;
 
     }
-
-
 }
