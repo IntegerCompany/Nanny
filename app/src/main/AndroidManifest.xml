@@ -32,6 +32,10 @@
              android:name=".services.ClientService">
 
         </service>
+        <service
+            android:name=".services.ServerService"
+            >
+        </service>
 
     </application>
 
