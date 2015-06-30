@@ -91,6 +91,7 @@ public class ServerService extends Service {
             server = new Server();
             server.getKryo().register(SimpleObject.class);
             server.getKryo().register(VolumeSO.class);
+            server.getKryo().register(MessageSO.class);
 
             server.start();
             Log.d("ServerService", "Port: " + (PORT + 1));

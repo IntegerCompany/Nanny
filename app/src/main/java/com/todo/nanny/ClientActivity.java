@@ -48,7 +48,7 @@ public class ClientActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        startService(intent);
+        if (!isAlarm) startService(intent);
         bindService(intent, sConn, 0);
 
     }
@@ -64,11 +64,12 @@ public class ClientActivity extends Activity {
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             clientService.letMeHearBaby();
+                            clientService.alertDialogReceived();
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
+                            clientService.alertDialogReceived();
                         }
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)

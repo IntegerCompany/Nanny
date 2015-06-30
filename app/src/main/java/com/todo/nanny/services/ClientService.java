@@ -159,6 +159,7 @@ public class ClientService extends Service {
     }
 
     public void letMeHearBaby(){
+
         final MessageSO messageSO = new MessageSO();
         messageSO.setCode(1);
         new Thread(new Runnable() {
@@ -172,6 +173,10 @@ public class ClientService extends Service {
     public void startVoiceReceiving(){
         msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
 
+    }
+
+    public void alertDialogReceived(){
+        isLoudMessageSent = false;
     }
     
 }
