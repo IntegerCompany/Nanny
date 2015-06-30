@@ -2,11 +2,15 @@ package com.todo.nanny;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,6 +21,8 @@ import android.widget.TextView;
 
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.audio.MediaStreamServer;
+import com.todo.nanny.services.ClientService;
+import com.todo.nanny.services.ServerService;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -24,6 +30,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 public class ServerActivity extends Activity {
+    private static final String LOG_TAG = "ServerActivity";
     EditText editText1, editText2;
     Button button1;
     SeekBar volume;
@@ -32,6 +39,10 @@ public class ServerActivity extends Activity {
     int port;
     MediaStreamServer mss;
     MediaStreamClient msc;
+    
+    ServerService serverService;
+    private boolean bound;
+
 
     /** Called when the activity is first created. */
     @Override
@@ -60,7 +71,11 @@ public class ServerActivity extends Activity {
                     port = Integer.valueOf(editText2.getText().toString());
 
                     textView1.append("Starting server\n");
-                    mss = new MediaStreamServer(ServerActivity.this, port);
+                    mss = new MediaStreamServer(ServerActivity.this, 54792);
+                    Intent intent = new Intent(getApplicationContext(), ServerService.class);
+                    intent.putExtra("ip", getLocalIpAddress());
+                    intent.putExtra("port", 5678);
+                    serverService.initNetworkSettings(getLocalIpAddress(), 5678);
 
                 }
                 else if(button1.getText().toString().equals("Stop")) {
@@ -68,6 +83,7 @@ public class ServerActivity extends Activity {
                     if(mss!=null) {
                         textView1.append("Stopping server\n");
                         mss.stop();
+                        serverService.stopWorking();
                     }
                 }
             }
@@ -98,6 +114,23 @@ public class ServerActivity extends Activity {
         IntentFilter filter = new IntentFilter();
         filter.addAction("tw.rascov.MediaStreamer.ERROR");
         registerReceiver(receiver, filter);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this, ServerService.class), new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                Log.d(LOG_TAG, "MainActivity onServiceConnected");
+                serverService = ((ServerService.ServerBinder) binder).getService();
+                bound = true;
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(LOG_TAG, "MainActivity onServiceDisconnected");
+                bound = false;
+            }
+        }, BIND_AUTO_CREATE);
     }
 
     @Override
