@@ -25,7 +25,7 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
 
-      //  isItroMode();
+        isIntroMode();
 
         Button server = (Button) findViewById(R.id.btn_go_server);
 
@@ -112,7 +112,7 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
         stop();
     }
 
-    private void isItroMode(){
+    private void isIntroMode(){
         if(AppState.isIntroShowing()){
             startActivity(new Intent(this,IntroActivity.class));
             this.finish();
