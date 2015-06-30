@@ -9,23 +9,17 @@ import android.content.pm.ActivityInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SeekBar;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.audio.MediaStreamServer;
-
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
 
 public class ServerActivity extends Activity {
     TextView textView1;
@@ -34,15 +28,24 @@ public class ServerActivity extends Activity {
     MediaStreamServer mss;
     MediaStreamClient msc;
 
+    FloatingActionButton button1;
+    View start_view, new_view;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        LayoutInflater inflater = getLayoutInflater();
+
+        start_view = inflater.inflate(R.layout.server_show_id,null);
+        new_view = inflater.inflate(R.layout.server_sleeping_baby,null);
+
+        addView(start_view);
+
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        final FloatingActionButton button1 = (FloatingActionButton) findViewById(R.id.button1);
+        button1 = (FloatingActionButton) findViewById(R.id.ok_main_button);
         button1.setTitle("Start");
 
         WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -54,6 +57,9 @@ public class ServerActivity extends Activity {
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                replaceView(start_view,new_view);
+
                 if (button1.getTitle().equals("Start")) {
                     button1.setTitle("Stop");
                     port = 54792;
@@ -90,5 +96,29 @@ public class ServerActivity extends Activity {
             System.exit(0);
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void addView(View v){
+        ViewGroup parent = (ViewGroup) findViewById(R.id.container_main);
+        parent.addView(v);
+    }
+    public void replaceView(View currentView, View newView) {
+        ViewGroup parent = getMyParentView();
+        if(parent == null) {
+            return;
+        }
+        removeView(currentView);
+        parent.addView(newView);
+        Log.i("Replacing", " View");
+    }
+    public ViewGroup getMyParentView() {
+        return (ViewGroup) findViewById(R.id.container_main);
+    }
+
+    public void removeView(View view) {
+        ViewGroup parent = getMyParentView();
+        if(parent != null) {
+            parent.removeView(view);
+        }
     }
 }
