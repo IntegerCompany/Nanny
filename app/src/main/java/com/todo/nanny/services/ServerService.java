@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.todo.nanny.delegates.ServerDelegate;
+import com.todo.nanny.simpleobject.SimpleObject;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public class ServerService extends Service {
     ServerBinder serverBinder = new ServerBinder();
     Connection serverConnection;
     Server server;
-    Listener listener;
+
     public final static int DATA_TRANSFER_PORT = 5679;
 
     private String ip;
@@ -38,7 +39,6 @@ public class ServerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-
         return START_REDELIVER_INTENT;
     }
 
@@ -48,50 +48,53 @@ public class ServerService extends Service {
     }
 
 
-    public void startObjectTransferingServer(){
+    public void startObjectTransferingServer() {
         try {
-        server = new Server();
-        server.start();
-        server.bind(port);
-        server.addListener(new Listener(){
-            @Override
-            public void connected(Connection connection) {
-                super.connected(connection);
-                serverConnection = connection;
-                Log.d("ServerService", "Server: Someone connected");
-            }
+            server = new Server();
+            server.getKryo().register(SimpleObject.class);
+            server.start();
+            server.bind(port);
+            server.addListener(new Listener() {
+                @Override
+                public void connected(Connection connection) {
+                    super.connected(connection);
+                    serverConnection = connection;
+                    Log.d("ServerService", "Server: Someone connected");
+                }
 
-            @Override
-            public void received(Connection connection, Object object) {
-                super.received(connection, object);
-                serverConnection = connection;
-                Log.d("ServerService", "Server: we have this object from client " + object.getClass().getName());
-            }
+                @Override
+                public void received(Connection connection, Object object) {
+                    super.received(connection, object);
+                    serverConnection = connection;
+                    Log.d("ServerService", "Server: we have this object from client " + object.getClass().getName());
+                    if (object instanceof SimpleObject){
+                        Log.d("ServerService", "Yes! its Simple object with: "  + ((SimpleObject) object).getValue());
 
-            @Override
-            public void disconnected(Connection connection) {
-                super.disconnected(connection);
-                serverConnection = connection;
-                Log.d("ServerService", "Server: Client disconnected");
-            }
-        });
+                    }
+                }
+
+                @Override
+                public void disconnected(Connection connection) {
+                    super.disconnected(connection);
+                    serverConnection = connection;
+                    Log.d("ServerService", "Server: Client disconnected");
+                }
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
-
-
     }
 
-    public void initNetworkSettings(String ip, int port){
+    public void initNetworkSettings(String ip, int port) {
         this.ip = ip;
         this.port = port;
         startObjectTransferingServer();
     }
 
-    public void stopWorking(){
+    public void stopWorking() {
         server.stop();
     }
 

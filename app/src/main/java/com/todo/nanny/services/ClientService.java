@@ -20,7 +20,6 @@ import com.todo.nanny.audio.MediaStreamClient;
  */
 public class ClientService extends Service {
     final String TAG = "ClientService";
-    int ip;
     Client client;
     Connection clientConnection;
     
@@ -55,7 +54,7 @@ public class ClientService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        startDataTransferingClient();    
+
 
         return START_NOT_STICKY;
     }
@@ -71,12 +70,16 @@ public class ClientService extends Service {
         Log.d(TAG, String.valueOf(port));
         Log.d(TAG, ip);
         msc = new MediaStreamClient(ClientService.this, ip, port);
+        startDataTransferingClient();
     }
 
     public void stopClient(){
         Log.d(TAG, "startClient");
         if (msc !=null){
             msc.stop();
+        }
+        if (client != null){
+            client.stop();
         }
     }
 
