@@ -71,7 +71,7 @@ public class ClientService extends Service {
         Log.d(TAG, "startClient");
         Log.d(TAG, String.valueOf(ServerService.PORT));
         Log.d(TAG, ip);
-        msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
+      //  msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
         startDataTransferingClient(ip);
     }
 
@@ -94,6 +94,7 @@ public class ClientService extends Service {
     public void startDataTransferingClient(final String ip) {
         client = new Client();
         client.getKryo().register(SimpleObject.class);
+        client.getKryo().register(VolumeSO.class);
         new Thread(client).start();
         new Thread(new Runnable() {
             @Override
@@ -122,7 +123,7 @@ public class ClientService extends Service {
                 super.received(connection, object);
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
-                if(object instanceof Integer){
+                if(object instanceof VolumeSO){
                     Log.d("ClientService","Volume: "+ ((VolumeSO)object).getVolume());
                 }
             }

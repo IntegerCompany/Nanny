@@ -10,6 +10,9 @@ public class VolumeSO {
     public VolumeSO(int volume) {
         this.volume = volume;
     }
+    public VolumeSO() {
+
+    }
 
     public int getVolume() {
         return volume;
