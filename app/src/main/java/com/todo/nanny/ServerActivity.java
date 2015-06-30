@@ -71,20 +71,15 @@ public class ServerActivity extends Activity {
                     port = Integer.valueOf(editText2.getText().toString());
 
                     textView1.append("Starting server\n");
-                    mss = new MediaStreamServer(ServerActivity.this, 54792);
-                    Intent intent = new Intent(getApplicationContext(), ServerService.class);
-                    intent.putExtra("ip", getLocalIpAddress());
-                    intent.putExtra("port", 5678);
+
+                    serverService.startServer(port);
                     serverService.initNetworkSettings(getLocalIpAddress(), 5678);
 
                 }
                 else if(button1.getText().toString().equals("Stop")) {
                     button1.setText("Start");
-                    if(mss!=null) {
-                        textView1.append("Stopping server\n");
-                        mss.stop();
-                        serverService.stopWorking();
-                    }
+                    serverService.stopWorking();
+
                 }
             }
         });

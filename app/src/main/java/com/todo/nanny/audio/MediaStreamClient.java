@@ -25,8 +25,9 @@ public class MediaStreamClient {
 		new Thread() {
 			byte[] buffer = new byte[playBufSize];
 			public void run() {
-				try { connfd = new Socket(ip, port); }
-				catch (Exception e) {
+				try { connfd = new Socket(ip, port);
+                connfd.setReuseAddress(true);
+                }catch (Exception e) {
 					e.printStackTrace();
 					Intent intent = new Intent()
 						.setAction("tw.rascov.MediaStreamer.ERROR")

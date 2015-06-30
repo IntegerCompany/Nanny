@@ -9,6 +9,8 @@ import android.util.Log;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.todo.nanny.ServerActivity;
+import com.todo.nanny.audio.MediaStreamServer;
 import com.todo.nanny.delegates.ServerDelegate;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ public class ServerService extends Service {
     Connection serverConnection;
     Server server;
     Listener listener;
+    MediaStreamServer mss;
     public final static int DATA_TRANSFER_PORT = 5679;
 
     private String ip;
@@ -45,6 +48,10 @@ public class ServerService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return serverBinder;
+    }
+
+    public void startServer(int port){
+        mss = new MediaStreamServer(ServerService.this, port);
     }
 
 
@@ -93,6 +100,10 @@ public class ServerService extends Service {
 
     public void stopWorking(){
         server.stop();
+
+        if(mss!=null) {
+            mss.stop();
+        }
     }
 
     public class ServerBinder extends Binder {
