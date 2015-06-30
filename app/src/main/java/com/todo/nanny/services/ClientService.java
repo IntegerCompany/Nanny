@@ -73,7 +73,7 @@ public class ClientService extends Service {
         Log.d(TAG, "startClient");
         Log.d(TAG, String.valueOf(ServerService.PORT));
         Log.d(TAG, ip);
-        msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
+        //msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
         startDataTransferingClient(ip);
     }
 
