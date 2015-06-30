@@ -12,8 +12,8 @@ import com.esotericsoftware.kryonet.Listener;
 
 import java.io.IOException;
 
-import com.todo.nanny.ClientActivity;
 import com.todo.nanny.audio.MediaStreamClient;
+import com.todo.nanny.simpleobject.MessageSO;
 import com.todo.nanny.simpleobject.SimpleObject;
 import com.todo.nanny.simpleobject.VolumeSO;
 
@@ -24,6 +24,8 @@ public class ClientService extends Service {
     final String TAG = "ClientService";
     Client client;
     Connection clientConnection;
+    boolean isLoudMessageSent;
+    String ip;
     
 
     MediaStreamClient msc;
@@ -68,10 +70,10 @@ public class ClientService extends Service {
     }
 
     public void startClient(String ip){
+        this.ip = ip;
         Log.d(TAG, "startClient");
         Log.d(TAG, String.valueOf(ServerService.PORT));
         Log.d(TAG, ip);
-      //  msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
         startDataTransferingClient(ip);
     }
 
@@ -95,6 +97,7 @@ public class ClientService extends Service {
         client = new Client();
         client.getKryo().register(SimpleObject.class);
         client.getKryo().register(VolumeSO.class);
+        client.getKryo().register(MessageSO.class);
         new Thread(client).start();
         new Thread(new Runnable() {
             @Override
@@ -124,7 +127,23 @@ public class ClientService extends Service {
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
                 if(object instanceof VolumeSO){
-                    Log.d("ClientService","Volume: "+ ((VolumeSO)object).getVolume());
+                    VolumeSO volume = (VolumeSO) object;
+                    Log.d("ClientService", "Volume: " + volume.getVolume());
+                    if (!isLoudMessageSent){
+                        if (volume.getVolume() > 30000) {
+                            isLoudMessageSent = true;
+                            Intent intent = new Intent().setAction("com.todo.nanny.alarm");
+                            getApplicationContext().sendBroadcast(intent);
+                        }
+                    }
+                }
+                if (object instanceof MessageSO){
+                    MessageSO messageSO = (MessageSO) object;
+                    switch (messageSO.getCode()){
+                        case 2:
+                            startVoiceReceiving();
+                        break;
+                    }
                 }
             }
 
@@ -136,6 +155,22 @@ public class ClientService extends Service {
             }
         });
 
+
+    }
+
+    public void letMeHearBaby(){
+        final MessageSO messageSO = new MessageSO();
+        messageSO.setCode(1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                clientConnection.sendTCP(messageSO);
+            }
+        }).start();
+    }
+
+    public void startVoiceReceiving(){
+        msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
 
     }
     

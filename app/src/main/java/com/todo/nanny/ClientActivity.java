@@ -1,9 +1,11 @@
 package com.todo.nanny;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -41,12 +43,38 @@ public class ClientActivity extends Activity {
     Intent intent;
     String LOG_TAG = "ClientActivity";
     ClientService clientService;
+    boolean isAlarm;
 
     @Override
     protected void onStart() {
         super.onStart();
         startService(intent);
         bindService(intent, sConn, 0);
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isAlarm){
+            new AlertDialog.Builder(this)
+                    .setTitle("Alarm")
+                    .setMessage("Do you want to hear your baby?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            clientService.letMeHearBaby();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+        isAlarm = false;
     }
 
     /** Called when the activity is first created. */
@@ -122,14 +150,21 @@ public class ClientActivity extends Activity {
 
         BroadcastReceiver receiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
+                Log.d("ClientActivity", "OnReceive");
                 if(intent.getAction().equals("tw.rascov.MediaStreamer.ERROR")) {
                     textView1.append("Error: " + intent.getStringExtra("msg") + "\n");
                     button1.setText("Start");
+                }else if(intent.getAction().equals("com.todo.nanny.alarm")){
+                    Intent it = new Intent(getApplicationContext(),ClientActivity.class);
+                    it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(it);
+                    isAlarm = true;
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction("tw.rascov.MediaStreamer.ERROR");
+        filter.addAction("com.todo.nanny.alarm");
         registerReceiver(receiver, filter);
     }
 
@@ -156,5 +191,7 @@ public class ClientActivity extends Activity {
         catch (SocketException e) { e.printStackTrace(); }
         return null;
     }
+
+
 
 }

@@ -1,9 +1,7 @@
 package com.todo.nanny.services;
 
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.Handler;
@@ -13,10 +11,10 @@ import android.util.Log;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.todo.nanny.LauncherActivity;
 import com.todo.nanny.ServerActivity;
 import com.todo.nanny.audio.MediaStreamServer;
 import com.todo.nanny.delegates.ServerDelegate;
+import com.todo.nanny.simpleobject.MessageSO;
 import com.todo.nanny.simpleobject.SimpleObject;
 import com.todo.nanny.simpleobject.VolumeSO;
 
@@ -41,25 +39,9 @@ public class ServerService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        start();
-
-        final Handler handler;
-
-        handler = new Handler();
-        final Runnable r = new Runnable() {
-            public void run() {
-                int aml = getAmplitude();
-
-
-                    sendAlarm(aml);
-                    Log.d("ServerService", "" + aml);
 
 
 
-                handler.postDelayed(this, 1000);
-            }
-        };
-        handler.postDelayed(r, 1000);
 
     }
 
@@ -78,8 +60,28 @@ public class ServerService extends Service {
     }
 
     public void startServer(){
-        //mss = new MediaStreamServer(ServerService.this, PORT);
+
         startObjectTransferingServer();
+        start();
+
+        final Handler handler;
+
+        handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                int aml = getAmplitude();
+
+                if(aml>100){
+                    sendAlarm(aml);
+                }
+                Log.d("ServerService", "" + aml);
+
+
+
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.postDelayed(r, 1000);
 
 
     }
@@ -89,6 +91,7 @@ public class ServerService extends Service {
             server = new Server();
             server.getKryo().register(SimpleObject.class);
             server.getKryo().register(VolumeSO.class);
+
             server.start();
             Log.d("ServerService", "Port: " + (PORT + 1));
             server.bind(PORT + 1);
@@ -107,10 +110,27 @@ public class ServerService extends Service {
                     Log.d("ServerService", "Server: we have this object from client " + object.getClass().getName());
                     if (object instanceof SimpleObject){
                         Log.d("ServerService", "Yes! its Simple object with: "  + ((SimpleObject) object).getValue());
-//                        Intent it = new Intent("intent.my.action");
+                        Intent it = new Intent(getApplicationContext(),ServerActivity.class);
 //                        it.setComponent(new ComponentName(getApplicationContext().getPackageName(), ServerActivity.class.getName()));
-//                        it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        getApplicationContext().startActivity(it);
+                        it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(it);
+                    }else if(object instanceof MessageSO){
+                        MessageSO message = (MessageSO) object;
+                        int code = message.getCode();
+                        switch (code){
+                            case 1: {
+                                startVoiceTransfering();
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(serverConnection!= null && serverConnection.isConnected()){
+                                            serverConnection.sendTCP(new MessageSO(2));
+                                        }
+                                    }
+                                }).start();
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -125,6 +145,10 @@ public class ServerService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void startVoiceTransfering(){
+        mss = new MediaStreamServer(ServerService.this, PORT);
     }
 
 
@@ -151,7 +175,6 @@ public class ServerService extends Service {
             public void run() {
                 if(serverConnection!= null && serverConnection.isConnected()){
                     serverConnection.sendTCP(new VolumeSO(volume));
-                    Log.d("ServerService", "" + 1);
                 }
             }
         }).start();
@@ -189,4 +212,8 @@ public class ServerService extends Service {
             return 0;
 
     }
+
+
+
+
 }
