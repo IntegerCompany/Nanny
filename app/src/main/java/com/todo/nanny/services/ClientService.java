@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -24,6 +25,7 @@ public class ClientService extends Service {
     final String TAG = "ClientService";
     Client client;
     Connection clientConnection;
+    boolean isLoudMessageSent;
     
 
     MediaStreamClient msc;
@@ -122,8 +124,16 @@ public class ClientService extends Service {
                 super.received(connection, object);
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
-                if(object instanceof Integer){
-                    Log.d("ClientService","Volume: "+ ((VolumeSO)object).getVolume());
+                if(object instanceof VolumeSO){
+                    VolumeSO volume = (VolumeSO) object;
+                    Log.d("ClientService","Volume: "+ volume.getVolume());
+                    if (!isLoudMessageSent){
+                        if (volume.getVolume() > 30000) {
+                            isLoudMessageSent = true;
+                            Intent intent = new Intent().setAction("com.todo.nanny.alarm");
+                            getApplicationContext().sendBroadcast(intent);
+                        }
+                    }
                 }
             }
 
