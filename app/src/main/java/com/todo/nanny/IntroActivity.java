@@ -35,14 +35,14 @@ public class IntroActivity extends AppIntro {
     @Override
     public void onSkipPressed() {
         //temp intent
-//        startActivity(new Intent(this,ClientActivity.class));
-//        this.finish();
+        startActivity(new Intent(this,ClientActivity.class));
+        this.finish();
     }
 
     @Override
     public void onDonePressed() {
-        //temp intent
-//        startActivity(new Intent(this,ClientActivity.class));
-//        this.finish();
+       // temp intent
+        startActivity(new Intent(this,ServerActivity.class));
+        this.finish();
     }
 }
