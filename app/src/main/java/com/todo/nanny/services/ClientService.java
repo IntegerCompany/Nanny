@@ -121,6 +121,9 @@ public class ClientService extends Service {
                 super.received(connection, object);
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
+                if(object instanceof Integer){
+                    Log.d("ClientService","Volume: "+ (Integer)object);
+                }
             }
 
             @Override

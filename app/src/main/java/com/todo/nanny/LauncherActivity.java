@@ -18,7 +18,7 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
 
     private MediaRecorder mRecorder = null;
     ProgressBar progressBar;
-    int i  = 1;
+    boolean wasAlarmSent = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

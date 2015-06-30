@@ -1,14 +1,19 @@
 package com.todo.nanny.services;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.Color;
+import android.media.MediaRecorder;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.todo.nanny.LauncherActivity;
 import com.todo.nanny.ServerActivity;
 import com.todo.nanny.audio.MediaStreamServer;
 import com.todo.nanny.delegates.ServerDelegate;
@@ -19,6 +24,7 @@ import java.io.IOException;
 public class ServerService extends Service {
 
     public static final int PORT = 54792;
+    private MediaRecorder mRecorder = null;
 
     ServerBinder serverBinder = new ServerBinder();
     Connection serverConnection;
@@ -32,6 +38,26 @@ public class ServerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        start();
+
+        final Handler handler;
+
+        handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                int aml = getAmplitude();
+
+                if(aml > 30000){
+                    if(serverConnection.isConnected()){
+                        serverConnection.sendTCP(new Integer(aml));
+                    }
+                }
+
+
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.postDelayed(r, 1000);
     }
 
 
@@ -59,6 +85,7 @@ public class ServerService extends Service {
         try {
             server = new Server();
             server.getKryo().register(SimpleObject.class);
+            server.getKryo().register(Integer.class);
             server.start();
             Log.d("ServerService", "Port: " + (PORT + 1));
             server.bind(PORT + 1);
@@ -77,7 +104,10 @@ public class ServerService extends Service {
                     Log.d("ServerService", "Server: we have this object from client " + object.getClass().getName());
                     if (object instanceof SimpleObject){
                         Log.d("ServerService", "Yes! its Simple object with: "  + ((SimpleObject) object).getValue());
-
+                        Intent it = new Intent("intent.my.action");
+                        it.setComponent(new ComponentName(getApplicationContext().getPackageName(), ServerActivity.class.getName()));
+                        it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(it);
                     }
                 }
 
@@ -104,6 +134,7 @@ public class ServerService extends Service {
         if(mss!=null) {
             mss.stop();
         }
+        stop();
     }
 
     public class ServerBinder extends Binder {
@@ -111,5 +142,39 @@ public class ServerService extends Service {
             return ServerService.this;
         }
     }
+
+
+    public void start() {
+        if (mRecorder == null) {
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mRecorder.setOutputFile("/dev/null");
+            try {
+                mRecorder.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mRecorder.start();
+        }
+    }
+
+    public void stop() {
+        if (mRecorder != null) {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
+    }
+
+    public int getAmplitude() {
+        if (mRecorder != null)
+            return mRecorder.getMaxAmplitude();
+        else
+            return 0;
+
+    }
+
 
 }
