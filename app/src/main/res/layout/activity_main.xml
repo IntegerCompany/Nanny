@@ -18,19 +18,19 @@
         android:layout_marginTop="50dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:id="@+id/et_enter_id_here" />
+        android:id="@+id/et_enter_ip_here" />
 
     <ImageButton
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:id="@+id/imageButton4"
+        android:id="@+id/ibtn_start"
         android:layout_centerHorizontal="true"
         android:background="@drawable/start_with_shadow"
         android:layout_alignParentBottom="false"
         android:layout_marginBottom="16dp"
         android:visibility="visible"
         android:layout_alignParentTop="false"
-        android:layout_below="@+id/et_enter_id_here" />
+        android:layout_below="@+id/et_enter_ip_here" />
 
     <ImageView
         android:layout_width="210dp"
@@ -38,14 +38,14 @@
         android:id="@+id/imageView4"
         android:src="@drawable/mom_phone_p_b"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/imageButton4" />
+        android:layout_below="@+id/ibtn_start" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/container_main"
         android:background="@color/pink_baby"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:layout_width="300dp"
@@ -60,7 +60,7 @@
             android:layout_height="80dp"
             android:id="@+id/imageButton"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/start_with_shadow"
+            android:background="@drawable/pause_with_shadow"
             android:layout_alignParentBottom="false"
             android:layout_marginBottom="16dp"
             android:visibility="visible"

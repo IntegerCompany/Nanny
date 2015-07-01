@@ -12,6 +12,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.todo.nanny.ClientActivity;
+
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.simpleobject.MessageSO;
 import com.todo.nanny.simpleobject.SimpleObject;
@@ -140,9 +141,8 @@ public class ClientService extends Service {
             public void connected(Connection connection) {
                 super.connected(connection);
                 clientConnection = connection;
-                SimpleObject simpleObject = new SimpleObject();
-                simpleObject.setValue("HelloWorld");
-                clientConnection.sendTCP(simpleObject);
+                Intent intent = new Intent().setAction("com.todo.nanny.hide");
+                getApplicationContext().sendBroadcast(intent);
                 Log.d("ClientService", "Client: connected to server");
             }
 

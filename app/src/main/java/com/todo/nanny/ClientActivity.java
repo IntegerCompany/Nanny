@@ -23,10 +23,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rengwuxian.materialedittext.MaterialEditText;
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.services.ClientService;
 import com.todo.nanny.services.ServerService;
@@ -37,7 +40,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 public class ClientActivity extends Activity {
-    EditText editText1;
+    MaterialEditText editText1;
     Button button1;
     TextView textView1;
     String ip;
@@ -49,6 +52,8 @@ public class ClientActivity extends Activity {
     String LOG_TAG = "ClientActivity";
     ClientService clientService;
     boolean isAlarm;
+    ImageButton ibtnStart;
+    RelativeLayout containerSleep;
 
     Handler handler;
 
@@ -94,9 +99,11 @@ public class ClientActivity extends Activity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // initialize layout variables
-        editText1 = (EditText) findViewById(R.id.editText1);
-        button1 = (Button) findViewById(R.id.button1);
-        textView1 = (TextView) findViewById(R.id.textView1);
+        editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
+        ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
+        //button1 = (Button) findViewById(R.id.button1);
+
+        containerSleep = (RelativeLayout) findViewById(R.id.container_main);
         handler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -126,34 +133,43 @@ public class ClientActivity extends Activity {
             }
         };
 
-
-        button1.setOnClickListener(new OnClickListener() {
+        ibtnStart.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if(button1.getText().toString().equals("Start")) {
-                    button1.setText("Stop");
-                    ip = editText1.getText().toString();
-                    textView1.append("Starting client, " + ip + ":" + ServerService.PORT + "\n");
-                    intent.putExtra("ip", ip);
-                    clientService.startClient(ip);
-                }
-                else if(button1.getText().toString().equals("Stop")) {
-
-
-                    textView1.append("Stopping client\n");
-                    clientService.stopClient();
-                    clientService.setIsLoudMessageSent(false);
-
-                }
+            public void onClick(View view) {
+//                button1.setText("Stop");
+                ip = editText1.getText().toString();
+                intent.putExtra("ip", ip);
+                clientService.startClient(ip);
             }
         });
+
+
+//        button1.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(button1.getText().toString().equals("Start")) {
+//                    button1.setText("Stop");
+//                    ip = editText1.getText().toString();
+//                    textView1.append("Starting client, " + ip + ":" + ServerService.PORT + "\n");
+//                    intent.putExtra("ip", ip);
+//                    clientService.startClient(ip);
+//                }
+//                else if(button1.getText().toString().equals("Stop")) {
+//
+//
+//                    textView1.append("Stopping client\n");
+//                    clientService.stopClient();
+//                    clientService.setIsLoudMessageSent(false);
+//
+//                }
+//            }
+//        });
 
 
         BroadcastReceiver receiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
                 Log.d("ClientActivity", "OnReceive: " + intent.getAction());
                 if(intent.getAction().equals("tw.rascov.MediaStreamer.ERROR")) {
-                    textView1.append("Error: " + intent.getStringExtra("msg") + "\n");
                     //button1.setText("Start");
                 }else if(intent.getAction().equals("com.todo.nanny.alarm")){
                     Intent it = new Intent(getApplicationContext(),ClientActivity.class);
@@ -172,11 +188,13 @@ public class ClientActivity extends Activity {
 
                     }
 
-                    button1.setText("Start");
+                    //button1.setText("Start");
                     Log.d("ClientActivity", "another attempt to edit ip");
                 }else if(intent.getAction().equals("com.todo.nanny.reconnectError")){
-                    button1.setText("Start");
+                    //button1.setText("Start");
                     //TODO alert
+                }else if(intent.getAction().equals("com.todo.nanny.hide")){
+                    containerSleep.setVisibility(View.VISIBLE);
                 }
             }
         };
@@ -185,6 +203,7 @@ public class ClientActivity extends Activity {
         filter.addAction("com.todo.nanny.alarm");
         filter.addAction("com.todo.nanny.wrongIP");
         filter.addAction("com.todo.nanny.reconnectError");
+        filter.addAction("com.todo.nanny.hide");
 
         registerReceiver(receiver, filter);
     }
