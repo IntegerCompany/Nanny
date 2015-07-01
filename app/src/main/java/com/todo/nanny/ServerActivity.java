@@ -121,7 +121,7 @@ public class ServerActivity extends Activity {
     }
 
     public void addView(View v) {
-        ViewGroup parent = (ViewGroup) findViewById(R.id.container_main);
+        ViewGroup parent = (ViewGroup) findViewById(R.id.container_sleeping_baby_client);
         parent.addView(v);
     }
 
@@ -154,7 +154,7 @@ public class ServerActivity extends Activity {
     }
 
     public ViewGroup getMyParentView() {
-        return (ViewGroup) findViewById(R.id.container_main);
+        return (ViewGroup) findViewById(R.id.container_sleeping_baby_client);
     }
 
     public void removeView(View view) {

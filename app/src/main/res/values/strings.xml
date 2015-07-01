@@ -9,4 +9,9 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="alarm_action">com.todo.nanny.alarm</string>
+    <string name="error_action">tw.rascov.MediaStreamer.ERROR</string>
+    <string name="wrong_ip_action">com.todo.nanny.wrongIP</string>
+    <string name="connection_error">com.todo.nanny.reconnectError</string>
+    <string name="show_sleeping_baby_screen_action">com.todo.nanny.hide</string>
 </resources>

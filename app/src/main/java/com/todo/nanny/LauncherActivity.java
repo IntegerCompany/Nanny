@@ -27,7 +27,7 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
 
         AppState.setupAppState(this);
   // TODO modify introActivity
-  // isIntroMode();
+        isIntroMode();
 
         Button server = (Button) findViewById(R.id.btn_go_server);
 
