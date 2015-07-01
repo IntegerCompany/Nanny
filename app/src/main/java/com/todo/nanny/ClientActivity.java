@@ -49,26 +49,7 @@ public class ClientActivity extends Activity {
 
     Handler handler;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (!isAlarm) startService(intent);
-        bindService(intent, sConn, 0);
 
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(isAlarm) {
-
-            initCryBabyViews();
-            showAlarmScreen();
-
-        }
-        isAlarm = false;
-    }
 
     /** Called when the activity is first created. */
     @Override
@@ -81,24 +62,6 @@ public class ClientActivity extends Activity {
         // initialize layout variables
         initViewsById();
         startSignalListener();
-
-        intent = new Intent(this,ClientService.class);
-
-
-        sConn = new ServiceConnection() {
-            public void onServiceConnected(ComponentName name, IBinder binder) {
-                Log.d(LOG_TAG, "MainActivity onServiceConnected");
-                clientService = ((ClientService.MyBinder) binder).getService();
-                bound = true;
-            }
-
-            public void onServiceDisconnected(ComponentName name) {
-                Log.d(LOG_TAG, "MainActivity onServiceDisconnected");
-                bound = false;
-            }
-        };
-
-
 
 
 //        button1.setOnClickListener(new OnClickListener() {
@@ -116,14 +79,35 @@ public class ClientActivity extends Activity {
 //
 //                    textView1.append("Stopping client\n");
 //                    clientService.stopClient();
-//                    clientService.setIsLoudMessageSent(false);
+//                   clientService.setIsLoudMessageSent(false);
 //
 //                }
 //            }
 //        });
 
+        bindMyService();
 
         registerMyReceiver();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!isAlarm) startService(intent);
+        bindService(intent, sConn, 0);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isAlarm) {
+
+            initCryBabyViews();
+            showAlarmScreen();
+
+        }
+        isAlarm = false;
     }
 
     @Override
@@ -169,7 +153,7 @@ public class ClientActivity extends Activity {
      *  on pause listening
      */
     private void pauseListeningMyBaby(){
-
+        clientService.setIsLoudMessageSent(true);
     }
 
     /**
@@ -226,7 +210,7 @@ public class ClientActivity extends Activity {
 
                 switch (view.getId()){
                     case R.id.ibtn_pause_baby_listening:
-
+                        pauseListeningMyBaby();
                         break;
                     case R.id.ibtn_confirm_voice_transfer:
                         confirmVoiceTransfer();
@@ -240,7 +224,27 @@ public class ClientActivity extends Activity {
 
     }
 
+    private void bindMyService(){
+
+        intent = new Intent(this,ClientService.class);
+
+
+        sConn = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                Log.d(LOG_TAG, "MainActivity onServiceConnected");
+                clientService = ((ClientService.MyBinder) binder).getService();
+                bound = true;
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(LOG_TAG, "MainActivity onServiceDisconnected");
+                bound = false;
+            }
+        };
+    }
+
     private void registerMyReceiver(){
+
         receiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
                 Log.d("ClientActivity", "OnReceive: " + intent.getAction());
