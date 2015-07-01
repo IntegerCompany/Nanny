@@ -24,9 +24,10 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
-        AppState.setupAppState(this);
 
-        isIntroMode();
+        AppState.setupAppState(this);
+  // TODO modify introActivity
+  // isIntroMode();
 
         Button server = (Button) findViewById(R.id.btn_go_server);
 
@@ -38,8 +39,6 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
 
         server.setOnClickListener(this);
         client.setOnClickListener(this);
-
-
 
 //        start();
 //
@@ -120,7 +119,7 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
     }
 
     private void isIntroMode(){
-        if(AppState.isFirstLogin()){
+        if(AppState.isIntroShowing()){
             startActivity(new Intent(this,IntroActivity.class));
             this.finish();
         }
