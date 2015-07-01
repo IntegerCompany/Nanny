@@ -55,9 +55,6 @@ public class ServerActivity extends Activity {
         addView(start_view);
 
 
-        imageButton = (ImageButton) findViewById(R.id.ear_sleeping_button);
-        imageButton.setScaleX(0.01f);
-        imageButton.setScaleY(0.01f);
 
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -138,6 +135,9 @@ public class ServerActivity extends Activity {
 
         button1.animate().translationY(400f);
 
+        imageButton = (ImageButton) findViewById(R.id.ear_sleeping_button);
+        imageButton.setScaleX(0.01f);
+        imageButton.setScaleY(0.01f);
         imageButton.setVisibility(View.VISIBLE);
         imageButton.animate().scaleX(1f);
         imageButton.animate().scaleY(1f);
