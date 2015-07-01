@@ -39,7 +39,6 @@ import java.util.Enumeration;
 public class ClientActivity extends Activity {
     EditText editText1;
     Button button1;
-    SeekBar volume;
     TextView textView1;
     String ip;
     MediaStreamClient msc;
@@ -97,12 +96,7 @@ public class ClientActivity extends Activity {
         // initialize layout variables
         editText1 = (EditText) findViewById(R.id.editText1);
         button1 = (Button) findViewById(R.id.button1);
-        volume = (SeekBar) findViewById(R.id.volume);
-        volume.setMax(200);
-        volume.setProgress(100);
         textView1 = (TextView) findViewById(R.id.textView1);
-        textView1.append("Current IP: " + getLocalIpAddress() + "\n");
-
         handler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -154,19 +148,6 @@ public class ClientActivity extends Activity {
             }
         });
 
-        volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onStopTrackingTouch(SeekBar arg0) {
-                float vol = (float)(arg0.getProgress())/(float)(arg0.getMax());
-                if(msc!=null) msc.setVolume(vol, vol);
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {}
-
-            @Override
-            public void onStartTrackingTouch(SeekBar arg0) {}
-        });
 
         BroadcastReceiver receiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
@@ -216,21 +197,6 @@ public class ClientActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    public String getLocalIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        return inetAddress.getHostAddress();
-                    }
-                }
-            }
-        }
-        catch (SocketException e) { e.printStackTrace(); }
-        return null;
-    }
 
 
     private int getWifiSignal(){

@@ -31,6 +31,8 @@ public class ServerService extends Service {
     Listener listener;
     MediaStreamServer mss;
     private MediaRecorder mRecorder = null;
+    Handler handler;
+    boolean endHandler = false;
 
     public ServerService() {
     }
@@ -59,21 +61,22 @@ public class ServerService extends Service {
         startObjectTransferingServer();
         start();
 
-        final Handler handler;
+
 
         handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
-                int aml = getAmplitude();
+                if (!endHandler) {
+                    int aml = getAmplitude();
 
-                if(aml>100){
-                    sendAlarm(aml);
+                    if (aml > 100) {
+                        sendAlarm(aml);
+                    }
+                    Log.d("ServerService", "" + aml);
+
+
+                    handler.postDelayed(this, 1000);
                 }
-                Log.d("ServerService", "" + aml);
-
-
-
-                handler.postDelayed(this, 1000);
             }
         };
         handler.postDelayed(r, 1000);
@@ -215,7 +218,15 @@ public class ServerService extends Service {
 
     }
 
-
-
+    public void killAll(){
+        if(mss!=null){
+            mss.stop();
+        }
+        if(server != null){
+            server.stop();
+        }
+        endHandler = true;
+        stop();
+    }
 
 }

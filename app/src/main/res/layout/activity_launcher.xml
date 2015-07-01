@@ -7,24 +7,6 @@
     tools:context="com.todo.nanny.LauncherActivity">
 
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Client"
-        android:id="@+id/btn_go_client"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="104dp"
-        android:visibility="gone" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="server"
-        android:id="@+id/btn_go_server"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -68,7 +50,7 @@
         <Button
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:id="@+id/button"
+            android:id="@+id/btn_go_client"
             android:layout_gravity="center"
             android:background="@drawable/main_moms_button_selector" />
     </FrameLayout>
@@ -85,7 +67,7 @@
         <Button
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:id="@+id/button2"
+            android:id="@+id/btn_go_server"
             android:layout_gravity="center"
             android:background="@drawable/main_baby_button_selector" />
     </FrameLayout>

@@ -21,7 +21,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -38,33 +41,32 @@ import java.util.Enumeration;
 
 public class ServerActivity extends Activity {
     private static final String LOG_TAG = "ServerActivity";
-    EditText editText1;
-    Button button1;
-    SeekBar volume;
+
     TextView textView1;
     String ip;
+    BroadcastReceiver receiver;
+    ServiceConnection serviceConnection;
 
-    MediaStreamServer mss;
-    MediaStreamClient msc;
-    
+
     ServerService serverService;
-    private boolean bound;
+    boolean bound;
 
     FloatingActionButton button1;
     ImageButton imageButton;
     View start_view, new_view;
 
 
-
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         LayoutInflater inflater = getLayoutInflater();
 
-        start_view = inflater.inflate(R.layout.server_show_id,null);
-        new_view = inflater.inflate(R.layout.server_sleeping_baby,null);
+        start_view = inflater.inflate(R.layout.server_show_id, null);
+        new_view = inflater.inflate(R.layout.server_sleeping_baby, null);
 
         addView(start_view);
 
@@ -73,10 +75,10 @@ public class ServerActivity extends Activity {
         imageButton.setScaleX(0.01f);
         imageButton.setScaleY(0.01f);
 
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         button1 = (FloatingActionButton) findViewById(R.id.ok_main_button);
         button1.setTitle("Start");
-
 
 
         WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -88,54 +90,26 @@ public class ServerActivity extends Activity {
         button1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (button1.getText().toString().equals("Start")) {
-                    button1.setText("Stop");
-                    ip = editText1.getText().toString();
 
-                replaceView(start_view,new_view);
+                replaceView(start_view, new_view);
 
                 if (button1.getTitle().equals("Start")) {
                     button1.setTitle("Stop");
-                    port = 54792;
+                    ip = textView1.getText().toString();
 
                     textView1.append("Starting server\n");
                     serverService.startServer();
-
-
-
-                } else if (button1.getText().toString().equals("Stop")) {
-                    button1.setText("Start");
-                    serverService.stopWorking();
-
-
-
                 } else if (button1.getTitle().equals("Stop")) {
                     button1.setTitle("Start");
-                    if (mss != null) {
-                        textView1.append("Stopping server\n");
-                        mss.stop();
-                    }
+                    serverService.stopWorking();
                 }
             }
+
         });
 
-        volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onStopTrackingTouch(SeekBar arg0) {
-                float vol = (float)(arg0.getProgress())/(float)(arg0.getMax());
-                if(msc!=null) msc.setVolume(vol, vol);
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {}
-
-            @Override
-            public void onStartTrackingTouch(SeekBar arg0) {}
-        });
-
-        BroadcastReceiver receiver = new BroadcastReceiver() {
+        receiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
-                if(intent.getAction().equals("tw.rascov.MediaStreamer.ERROR")) {
+                if (intent.getAction().equals("tw.rascov.MediaStreamer.ERROR")) {
                     textView1.append("Error: " + intent.getStringExtra("msg") + "\n");
                     //button1.setText("Start");
                 }
@@ -146,10 +120,11 @@ public class ServerActivity extends Activity {
         registerReceiver(receiver, filter);
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
-        bindService(new Intent(this, ServerService.class), new ServiceConnection() {
+        serviceConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 Log.d(LOG_TAG, "MainActivity onServiceConnected");
                 serverService = ((ServerService.ServerBinder) binder).getService();
@@ -160,7 +135,8 @@ public class ServerActivity extends Activity {
                 Log.d(LOG_TAG, "MainActivity onServiceDisconnected");
                 bound = false;
             }
-        }, BIND_AUTO_CREATE);
+        };
+        bindService(new Intent(this, ServerService.class),serviceConnection , BIND_AUTO_CREATE);
     }
 
     @Override
@@ -171,13 +147,14 @@ public class ServerActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    public void addView(View v){
+    public void addView(View v) {
         ViewGroup parent = (ViewGroup) findViewById(R.id.container_main);
         parent.addView(v);
     }
+
     public void replaceView(View currentView, View newView) {
         ViewGroup parent = getMyParentView();
-        if(parent == null) {
+        if (parent == null) {
             return;
         }
         removeView(currentView);
@@ -188,29 +165,40 @@ public class ServerActivity extends Activity {
         imageButton.setVisibility(View.VISIBLE);
         imageButton.animate().scaleX(1f);
         imageButton.animate().scaleY(1f);
+        imageButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplication(),LauncherActivity.class));
+                finish();
+
+            }
+        });
 
         Log.i("Replacing", " View");
     }
+
     public ViewGroup getMyParentView() {
         return (ViewGroup) findViewById(R.id.container_main);
     }
 
     public void removeView(View view) {
         ViewGroup parent = getMyParentView();
-        if(parent != null) {
+        if (parent != null) {
             parent.removeView(view);
         }
     }
 
 
-
     @Override
     protected void onStop() {
         super.onStop();
-
     }
 
-    public ServerService getServerService() {
-        return serverService;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+        serverService.killAll();
+        unbindService(serviceConnection);
     }
 }

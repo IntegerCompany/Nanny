@@ -68,6 +68,7 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
         switch (view.getId()){
             case R.id.btn_go_server:
                 startActivity(new Intent(getApplication(),ServerActivity.class));
+                finish();
 
                 break;
             case R.id.btn_go_client:
