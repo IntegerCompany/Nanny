@@ -124,12 +124,11 @@ public class ClientActivity extends Activity {
                     clientService.startClient(ip);
                 }
                 else if(button1.getText().toString().equals("Stop")) {
-                    button1.setText("Start");
+                    //button1.setText("Start");
 
                     textView1.append("Stopping client\n");
                     clientService.stopClient();
-                    //stopService(new Intent(ctx, ClientService.class));
-
+                    clientService.setIsLoudMessageSent(false);
                 }
             }
         });
@@ -153,7 +152,7 @@ public class ClientActivity extends Activity {
                 Log.d("ClientActivity", "OnReceive");
                 if(intent.getAction().equals("tw.rascov.MediaStreamer.ERROR")) {
                     textView1.append("Error: " + intent.getStringExtra("msg") + "\n");
-                    button1.setText("Start");
+                    //button1.setText("Start");
                 }else if(intent.getAction().equals("com.todo.nanny.alarm")){
                     Intent it = new Intent(getApplicationContext(),ClientActivity.class);
                     it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

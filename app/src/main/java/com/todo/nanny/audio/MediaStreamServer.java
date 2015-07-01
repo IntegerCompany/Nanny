@@ -6,6 +6,9 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
+import com.todo.nanny.ServerActivity;
+import com.todo.nanny.services.ServerService;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,6 +23,7 @@ public class MediaStreamServer {
     Socket connfd;
 	AudioRecord audioRecord;
     MediaRecorder mRecorder;
+    ServerService serverService;
 
 	public MediaStreamServer(final Context ctx, final int port) {
 		recBufSize = 4096;
@@ -80,4 +84,5 @@ public class MediaStreamServer {
 		try { sockfd.close(); }
 		catch (Exception e) { e.printStackTrace(); }
 	}
+
 }

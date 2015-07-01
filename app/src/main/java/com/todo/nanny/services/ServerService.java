@@ -13,7 +13,6 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.todo.nanny.ServerActivity;
 import com.todo.nanny.audio.MediaStreamServer;
-import com.todo.nanny.delegates.ServerDelegate;
 import com.todo.nanny.simpleobject.MessageSO;
 import com.todo.nanny.simpleobject.SimpleObject;
 import com.todo.nanny.simpleobject.VolumeSO;
@@ -38,11 +37,6 @@ public class ServerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-
-
-
-
     }
 
 
@@ -91,6 +85,8 @@ public class ServerService extends Service {
             server = new Server();
             server.getKryo().register(SimpleObject.class);
             server.getKryo().register(VolumeSO.class);
+            server.getKryo().register(MessageSO.class);
+
 
             server.start();
             Log.d("ServerService", "Port: " + (PORT + 1));
@@ -108,26 +104,31 @@ public class ServerService extends Service {
                     super.received(connection, object);
                     serverConnection = connection;
                     Log.d("ServerService", "Server: we have this object from client " + object.getClass().getName());
-                    if (object instanceof SimpleObject){
-                        Log.d("ServerService", "Yes! its Simple object with: "  + ((SimpleObject) object).getValue());
-                        Intent it = new Intent(getApplicationContext(),ServerActivity.class);
+                    if (object instanceof SimpleObject) {
+                        Log.d("ServerService", "Yes! its Simple object with: " + ((SimpleObject) object).getValue());
+                        Intent it = new Intent(getApplicationContext(), ServerActivity.class);
 //                        it.setComponent(new ComponentName(getApplicationContext().getPackageName(), ServerActivity.class.getName()));
                         it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         getApplicationContext().startActivity(it);
-                    }else if(object instanceof MessageSO){
+                    } else if (object instanceof MessageSO) {
                         MessageSO message = (MessageSO) object;
                         int code = message.getCode();
-                        switch (code){
+                        switch (code) {
                             case 1: {
                                 startVoiceTransfering();
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if(serverConnection!= null && serverConnection.isConnected()){
+                                        if (serverConnection != null && serverConnection.isConnected()) {
                                             serverConnection.sendTCP(new MessageSO(2));
                                         }
                                     }
                                 }).start();
+                            }
+                            break;
+                            case 3: {
+
+                                start();
                                 break;
                             }
                         }
@@ -148,19 +149,21 @@ public class ServerService extends Service {
     }
 
     public void startVoiceTransfering(){
+        stop();
         mss = new MediaStreamServer(ServerService.this, PORT);
+
     }
 
 
 
     public void stopWorking() {
-        server.stop();
+        //server.stop();
 
         if(mss!=null) {
             mss.stop();
         }
 
-        stop();
+        //start();
     }
 
     public class ServerBinder extends Binder {
@@ -200,6 +203,7 @@ public class ServerService extends Service {
     public void stop() {
         if (mRecorder != null) {
             mRecorder.stop();
+            mRecorder.reset();
             mRecorder.release();
             mRecorder = null;
         }
@@ -212,6 +216,7 @@ public class ServerService extends Service {
             return 0;
 
     }
+
 
 
 

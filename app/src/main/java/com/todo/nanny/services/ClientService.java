@@ -82,9 +82,17 @@ public class ClientService extends Service {
         if (msc !=null){
             msc.stop();
         }
-        if (client != null){
-            client.stop();
-        }
+//        if (client != null){
+//            client.stop();
+//        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(clientConnection!= null && clientConnection.isConnected()){
+                    clientConnection.sendTCP(new MessageSO(3));
+                }
+            }
+        }).start();
     }
 
     public class MyBinder extends Binder {
@@ -126,10 +134,10 @@ public class ClientService extends Service {
                 super.received(connection, object);
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
-                if(object instanceof VolumeSO){
+                if (object instanceof VolumeSO) {
                     VolumeSO volume = (VolumeSO) object;
                     Log.d("ClientService", "Volume: " + volume.getVolume());
-                    if (!isLoudMessageSent){
+                    if (!isLoudMessageSent) {
                         if (volume.getVolume() > 30000) {
                             isLoudMessageSent = true;
                             Intent intent = new Intent().setAction("com.todo.nanny.alarm");
@@ -137,12 +145,12 @@ public class ClientService extends Service {
                         }
                     }
                 }
-                if (object instanceof MessageSO){
+                if (object instanceof MessageSO) {
                     MessageSO messageSO = (MessageSO) object;
-                    switch (messageSO.getCode()){
+                    switch (messageSO.getCode()) {
                         case 2:
                             startVoiceReceiving();
-                        break;
+                            break;
                     }
                 }
             }
@@ -164,14 +172,18 @@ public class ClientService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if(clientConnection!= null && clientConnection.isConnected()){
                 clientConnection.sendTCP(messageSO);
+                }
             }
         }).start();
     }
 
     public void startVoiceReceiving(){
         msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
-
     }
-    
+
+    public void setIsLoudMessageSent(boolean isLoudMessageSent) {
+        this.isLoudMessageSent = isLoudMessageSent;
+    }
 }

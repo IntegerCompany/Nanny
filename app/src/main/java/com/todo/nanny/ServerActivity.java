@@ -71,13 +71,9 @@ public class ServerActivity extends Activity {
                 if (button1.getText().toString().equals("Start")) {
                     button1.setText("Stop");
                     ip = editText1.getText().toString();
-
                     textView1.append("Starting server\n");
-
-
-
-
                     serverService.startServer();
+
 
 
                 } else if (button1.getText().toString().equals("Stop")) {
@@ -111,7 +107,7 @@ public class ServerActivity extends Activity {
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().equals("tw.rascov.MediaStreamer.ERROR")) {
                     textView1.append("Error: " + intent.getStringExtra("msg") + "\n");
-                    button1.setText("Start");
+                    //button1.setText("Start");
                 }
             }
         };
@@ -170,4 +166,7 @@ public class ServerActivity extends Activity {
 
     }
 
+    public ServerService getServerService() {
+        return serverService;
+    }
 }
