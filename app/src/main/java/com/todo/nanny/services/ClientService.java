@@ -141,7 +141,11 @@ public class ClientService extends Service {
                     VolumeSO volumeSO = (VolumeSO) object;
                     Log.d("ClientService", "Volume: " + volumeSO.getVolume());
                     volume = volumeSO.getVolume();
-                    setNoiseCounter(getNoiseCounter() + volumeSO.getVolume());
+                    if(volume> 30000){
+                        setNoiseCounter(getNoiseCounter()+1);
+                        Log.d("NoiseCounter", ""+ noiseCounter);
+                    }
+
                 }
                 if (object instanceof MessageSO) {
                     MessageSO messageSO = (MessageSO) object;
@@ -183,9 +187,6 @@ public class ClientService extends Service {
 
     public void setIsLoudMessageSent(boolean isLoudMessageSent) {
         this.isLoudMessageSent = isLoudMessageSent;
-    
-    public void alertDialogReceived(){
-        noiseCounter = 0;
     }
 
     public int getNoiseCounter() {
@@ -195,7 +196,7 @@ public class ClientService extends Service {
     public void setNoiseCounter(int noiseCounter) {
         this.noiseCounter = noiseCounter;
         if (!isLoudMessageSent){
-            if (noiseCounter > 120000) {
+            if (noiseCounter > 5) {
                 isLoudMessageSent = true;
                 Intent intent = new Intent().setAction("com.todo.nanny.alarm");
                 getApplicationContext().sendBroadcast(intent);

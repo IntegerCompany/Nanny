@@ -64,12 +64,12 @@ public class ClientActivity extends Activity {
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             clientService.letMeHearBaby();
-                            clientService.alertDialogReceived();
+                            clientService.setNoiseCounter(0);
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            clientService.alertDialogReceived();
+                            clientService.setNoiseCounter(0);
                         }
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -130,6 +130,7 @@ public class ClientActivity extends Activity {
                     textView1.append("Stopping client\n");
                     clientService.stopClient();
                     clientService.setIsLoudMessageSent(false);
+
                 }
             }
         });

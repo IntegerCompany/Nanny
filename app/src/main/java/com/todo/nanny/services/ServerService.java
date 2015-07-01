@@ -126,8 +126,7 @@ public class ServerService extends Service {
                                 }).start();
                             }
                             break;
-                            case 3: {
-
+                            case MessageSO.START_SERVER_RECORDER: {
                                 start();
                                 break;
                             }
