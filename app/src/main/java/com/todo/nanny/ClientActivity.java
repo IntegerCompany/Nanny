@@ -94,7 +94,6 @@ public class ClientActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         // initialize layout variables
         editText1 = (EditText) findViewById(R.id.editText1);
         button1 = (Button) findViewById(R.id.button1);

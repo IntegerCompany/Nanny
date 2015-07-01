@@ -9,18 +9,22 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.media.MediaRecorder;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.text.format.Formatter;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SeekBar;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.audio.MediaStreamServer;
 import com.todo.nanny.services.ClientService;
@@ -46,6 +50,10 @@ public class ServerActivity extends Activity {
     ServerService serverService;
     private boolean bound;
 
+    FloatingActionButton button1;
+    ImageButton imageButton;
+    View start_view, new_view;
+
 
 
     /** Called when the activity is first created. */
@@ -53,17 +61,29 @@ public class ServerActivity extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        LayoutInflater inflater = getLayoutInflater();
+
+        start_view = inflater.inflate(R.layout.server_show_id,null);
+        new_view = inflater.inflate(R.layout.server_sleeping_baby,null);
+
+        addView(start_view);
+
+
+        imageButton = (ImageButton) findViewById(R.id.ear_sleeping_button);
+        imageButton.setScaleX(0.01f);
+        imageButton.setScaleY(0.01f);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        button1 = (FloatingActionButton) findViewById(R.id.ok_main_button);
+        button1.setTitle("Start");
 
-        // initialize layout variables
-        editText1 = (EditText) findViewById(R.id.editText1);
-        button1 = (Button) findViewById(R.id.button1);
-        volume = (SeekBar) findViewById(R.id.volume);
-        volume.setMax(100);
-        volume.setProgress(100);
-        textView1 = (TextView) findViewById(R.id.textView1);
-        textView1.append("Current IP: " + getLocalIpAddress() + "\n");
+
+
+        WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
+        String ipAddress = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+
+        textView1 = (TextView) findViewById(R.id.tv_ip_address);
+        textView1.setText(ipAddress);
 
         button1.setOnClickListener(new OnClickListener() {
             @Override
@@ -71,6 +91,13 @@ public class ServerActivity extends Activity {
                 if (button1.getText().toString().equals("Start")) {
                     button1.setText("Stop");
                     ip = editText1.getText().toString();
+
+                replaceView(start_view,new_view);
+
+                if (button1.getTitle().equals("Start")) {
+                    button1.setTitle("Stop");
+                    port = 54792;
+
                     textView1.append("Starting server\n");
                     serverService.startServer();
 
@@ -82,12 +109,15 @@ public class ServerActivity extends Activity {
 
 
 
+                } else if (button1.getTitle().equals("Stop")) {
+                    button1.setTitle("Start");
+                    if (mss != null) {
+                        textView1.append("Stopping server\n");
+                        mss.stop();
+                    }
                 }
             }
         });
-
-
-
 
         volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -141,22 +171,36 @@ public class ServerActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    public String getLocalIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        return inetAddress.getHostAddress();
-                    }
-                }
-            }
+    public void addView(View v){
+        ViewGroup parent = (ViewGroup) findViewById(R.id.container_main);
+        parent.addView(v);
+    }
+    public void replaceView(View currentView, View newView) {
+        ViewGroup parent = getMyParentView();
+        if(parent == null) {
+            return;
         }
-        catch (SocketException e) { e.printStackTrace(); }
-        return null;
+        removeView(currentView);
+        parent.addView(newView);
+
+        button1.animate().translationY(400f);
+
+        imageButton.setVisibility(View.VISIBLE);
+        imageButton.animate().scaleX(1f);
+        imageButton.animate().scaleY(1f);
+
+        Log.i("Replacing", " View");
+    }
+    public ViewGroup getMyParentView() {
+        return (ViewGroup) findViewById(R.id.container_main);
     }
 
+    public void removeView(View view) {
+        ViewGroup parent = getMyParentView();
+        if(parent != null) {
+            parent.removeView(view);
+        }
+    }
 
 
 

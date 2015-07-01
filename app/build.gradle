@@ -18,10 +18,19 @@ android {
         }
     }
 }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.esotericsoftware:kryonet:2.22.0-RC1'
 
+
+    compile 'com.github.paolorotolo:appintro:2.0.0'
+
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
+
+    compile 'com.getbase:floatingactionbutton:1.9.1'
 }
