@@ -25,7 +25,9 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
 
-        //isIntroMode();
+        AppState.setupAppState(this);
+  // TODO modify introActivity
+  // isIntroMode();
 
         Button server = (Button) findViewById(R.id.btn_go_server);
 

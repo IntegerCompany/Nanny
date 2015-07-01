@@ -158,12 +158,9 @@ public class ServerService extends Service {
 
 
     public void stopWorking() {
-
-
         if(mss!=null) {
             mss.stop();
         }
-
         //start();
     }
 
