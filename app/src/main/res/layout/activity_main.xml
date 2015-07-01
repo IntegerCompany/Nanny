@@ -1,34 +1,120 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/pink_baby">
 
-    <RelativeLayout
+
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/container_main"/>
-
-    <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ok_main_button"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        fab:fab_icon="@drawable/ic_ok"
-        fab:fab_colorNormal="@color/white"
-        fab:fab_colorPressed="@color/pink_pressed"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp" />
+        app:met_baseColor="#FFFF"
+        app:met_primaryColor="#FFFF"
+        app:met_errorColor="#ddaa00"
+        android:hint="Enter ip here xxx.xxx.x.x"
+        android:textSize="28dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/et_enter_id_here" />
 
     <ImageButton
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:id="@+id/ear_sleeping_button"
+        android:id="@+id/imageButton4"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/ear_with_shadow"
-        android:layout_alignParentBottom="true"
+        android:background="@drawable/start_with_shadow"
+        android:layout_alignParentBottom="false"
         android:layout_marginBottom="16dp"
-        android:visibility="gone" />
+        android:visibility="visible"
+        android:layout_alignParentTop="false"
+        android:layout_below="@+id/et_enter_id_here" />
+
+    <ImageView
+        android:layout_width="210dp"
+        android:layout_height="210dp"
+        android:id="@+id/imageView4"
+        android:src="@drawable/mom_phone_p_b"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/imageButton4" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/container_main"
+        android:background="@color/pink_baby"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:id="@+id/imageView2"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/baby_sleeping_circle" />
+
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/imageButton"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/start_with_shadow"
+            android:layout_alignParentBottom="false"
+            android:layout_marginBottom="16dp"
+            android:visibility="visible"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="16dp" />
+
+        <Chronometer
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chronometer"
+            android:layout_alignBottom="@+id/imageView2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="33dp"
+            android:textSize="36sp"
+            android:textColor="#ff918383" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/relativeLayout"
+        android:background="@color/white"
+        android:visibility="gone">
+
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/imageButton2"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/ear_with_shadow"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:visibility="visible" />
+
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/imageButton3"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/pause_with_shadow"
+            android:layout_alignParentBottom="false"
+            android:layout_marginBottom="16dp"
+            android:visibility="visible"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="16dp" />
+
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:id="@+id/imageView3"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/baby_crying_circle" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

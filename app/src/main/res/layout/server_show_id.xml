@@ -6,6 +6,18 @@
     android:background="@drawable/baby_ask_with_text"
     android:id="@+id/view_show_id">
 
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/ok_main_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:fab_icon="@drawable/ic_ok"
+        fab:fab_colorNormal="@color/white"
+        fab:fab_colorPressed="@color/pink_pressed"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp" />
+
 
     <ScrollView
         android:layout_width="match_parent"
