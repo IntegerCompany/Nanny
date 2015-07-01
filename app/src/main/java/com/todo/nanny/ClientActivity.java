@@ -104,6 +104,7 @@ public class ClientActivity extends Activity {
         //button1 = (Button) findViewById(R.id.button1);
 
         containerSleep = (RelativeLayout) findViewById(R.id.container_main);
+        containerSleep.setVisibility(View.GONE);
         handler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -195,6 +196,8 @@ public class ClientActivity extends Activity {
                     //TODO alert
                 }else if(intent.getAction().equals("com.todo.nanny.hide")){
                     containerSleep.setVisibility(View.VISIBLE);
+                    editText1.setVisibility(View.GONE);
+                    ibtnStart.setVisibility(View.GONE);
                 }
             }
         };

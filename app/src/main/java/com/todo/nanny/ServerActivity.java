@@ -180,7 +180,7 @@ public class ServerActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        Log.d("ServerActivity","onBackPressed");
+        Log.d("ServerActivity", "onBackPressed");
         Intent intent = new Intent(getApplication(),LauncherActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
