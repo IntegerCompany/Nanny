@@ -139,14 +139,6 @@ public class ServerActivity extends Activity {
         bindService(new Intent(this, ServerService.class),serviceConnection , BIND_AUTO_CREATE);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            System.exit(0);
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
     public void addView(View v) {
         ViewGroup parent = (ViewGroup) findViewById(R.id.container_main);
         parent.addView(v);
@@ -200,5 +192,14 @@ public class ServerActivity extends Activity {
         unregisterReceiver(receiver);
         serverService.killAll();
         unbindService(serviceConnection);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("ServerActivity","onBackPressed");
+        Intent intent = new Intent(getApplication(),LauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }
