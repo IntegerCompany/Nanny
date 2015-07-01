@@ -189,22 +189,21 @@ public class ClientActivity extends Activity {
         registerReceiver(receiver, filter);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            System.exit(0);
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-
-
     private int getWifiSignal(){
 
         WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
         return WifiManager.calculateSignalLevel(wifiInfo.getRssi(), 6);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("ServerActivity","onBackPressed");
+        Intent intent = new Intent(getApplication(),LauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
 
