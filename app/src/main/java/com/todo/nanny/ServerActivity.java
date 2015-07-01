@@ -55,11 +55,6 @@ public class ServerActivity extends Activity {
         addView(start_view);
 
 
-        imageButton = (ImageButton) findViewById(R.id.ear_sleeping_button);
-        imageButton.setScaleX(0.01f);
-        imageButton.setScaleY(0.01f);
-
-
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         button1 = (FloatingActionButton) findViewById(R.id.ok_main_button);
         button1.setTitle("Start");
@@ -138,6 +133,9 @@ public class ServerActivity extends Activity {
 
         button1.animate().translationY(400f);
 
+        imageButton = (ImageButton) findViewById(R.id.ear_sleeping_button);
+        imageButton.setScaleX(0.01f);
+        imageButton.setScaleY(0.01f);
         imageButton.setVisibility(View.VISIBLE);
         imageButton.animate().scaleX(1f);
         imageButton.animate().scaleY(1f);
@@ -180,7 +178,7 @@ public class ServerActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        Log.d("ServerActivity","onBackPressed");
+        Log.d("ServerActivity", "onBackPressed");
         Intent intent = new Intent(getApplication(),LauncherActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
