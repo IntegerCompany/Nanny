@@ -3,19 +3,21 @@ package com.todo.nanny.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-
-import java.io.IOException;
-
+import com.todo.nanny.ClientActivity;
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.simpleobject.MessageSO;
 import com.todo.nanny.simpleobject.SimpleObject;
 import com.todo.nanny.simpleobject.VolumeSO;
+
+import java.io.IOException;
 
 /**
  * Created by dmytro on 6/29/15.
@@ -24,8 +26,14 @@ public class ClientService extends Service {
     final String TAG = "ClientService";
     Client client;
     Connection clientConnection;
-    boolean isLoudMessageSent;
+    boolean isLoudMessageSent, isReconnect = false;
     String ip;
+
+    Handler handler;
+    private static final int RECONNECTION_TIME = 10000;
+    int reconnectionAttempt = 0;
+
+
 
     //Used to count voice volume from server
     int noiseCounter = 0, volume = 0;
@@ -54,6 +62,7 @@ public class ClientService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        handler = new Handler();
         Log.d(TAG, "onCreate");
 
     }
@@ -116,7 +125,12 @@ public class ClientService extends Service {
                 try {
                     client.connect(5000, ip, ServerService.PORT + 1);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.d("ClientService", "cant connect to this ip: " + ip);
+                    Intent intent = new Intent().setAction("com.todo.nanny.wrongIP");
+                    if (!isReconnect){
+                        getApplicationContext().sendBroadcast(intent);
+                    }
+
                 }
             }
         }).start();
@@ -161,6 +175,23 @@ public class ClientService extends Service {
             public void disconnected(Connection connection) {
                 super.disconnected(connection);
                 clientConnection = connection;
+                handler.post(new Runnable() {
+                    public void run() {
+
+                        if (reconnectionAttempt < 3) {
+                                startDataTransferingClient(ip);
+                                reconnectionAttempt++;
+                                handler.postDelayed(this, RECONNECTION_TIME);
+                                isReconnect = true;
+                            }else{
+                            Intent intent = new Intent().setAction("com.todo.nanny.reconnectError");
+                            getApplicationContext().sendBroadcast(intent);
+                            isReconnect = false;
+                            Log.d("ClientService", "Cant Connect to server!!!");
+                        }
+
+                    }
+                });
                 Log.d("ClientService", "Client: we disconnected from server");
             }
         });

@@ -10,7 +10,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -20,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.todo.nanny.audio.MediaStreamClient;
 import com.todo.nanny.services.ClientService;
@@ -44,6 +50,8 @@ public class ClientActivity extends Activity {
     String LOG_TAG = "ClientActivity";
     ClientService clientService;
     boolean isAlarm;
+
+    Handler handler;
 
     @Override
     protected void onStart() {
@@ -96,6 +104,18 @@ public class ClientActivity extends Activity {
         textView1 = (TextView) findViewById(R.id.textView1);
         textView1.append("Current IP: " + getLocalIpAddress() + "\n");
 
+        handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (textView1 != null) {
+                    textView1.append("\t" + "Wifi signal: " + getWifiSignal());
+                }
+                handler.postDelayed(this, 3000);
+
+            }
+        });
+
 
         intent = new Intent(this,ClientService.class);
 
@@ -125,7 +145,7 @@ public class ClientActivity extends Activity {
                     clientService.startClient(ip);
                 }
                 else if(button1.getText().toString().equals("Stop")) {
-                    //button1.setText("Start");
+
 
                     textView1.append("Stopping client\n");
                     clientService.stopClient();
@@ -151,7 +171,7 @@ public class ClientActivity extends Activity {
 
         BroadcastReceiver receiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
-                Log.d("ClientActivity", "OnReceive");
+                Log.d("ClientActivity", "OnReceive: " + intent.getAction());
                 if(intent.getAction().equals("tw.rascov.MediaStreamer.ERROR")) {
                     textView1.append("Error: " + intent.getStringExtra("msg") + "\n");
                     //button1.setText("Start");
@@ -160,12 +180,32 @@ public class ClientActivity extends Activity {
                     it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getApplicationContext().startActivity(it);
                     isAlarm = true;
+                }else if(intent.getAction().equals("com.todo.nanny.wrongIP")){
+
+                    ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+                    if (mWifi.isConnected()) {
+                        Toast.makeText(getApplicationContext(), "Cant connect to this ip, check it!", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Check your wifi connection!", Toast.LENGTH_SHORT).show();
+
+                    }
+
+                    button1.setText("Start");
+                    Log.d("ClientActivity", "another attempt to edit ip");
+                }else if(intent.getAction().equals("com.todo.nanny.reconnectError")){
+                    button1.setText("Start");
+                    //TODO alert
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction("tw.rascov.MediaStreamer.ERROR");
         filter.addAction("com.todo.nanny.alarm");
+        filter.addAction("com.todo.nanny.wrongIP");
+        filter.addAction("com.todo.nanny.reconnectError");
+
         registerReceiver(receiver, filter);
     }
 
@@ -193,6 +233,14 @@ public class ClientActivity extends Activity {
         return null;
     }
 
+
+    private int getWifiSignal(){
+
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+
+        return WifiManager.calculateSignalLevel(wifiInfo.getRssi(), 6);
+    }
 
 
 }
