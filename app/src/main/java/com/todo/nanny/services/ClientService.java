@@ -85,7 +85,17 @@ public class ClientService extends Service {
         if (msc !=null){
             msc.stop();
         }
-
+//        if (client != null){
+//            client.stop();
+//        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(clientConnection!= null && clientConnection.isConnected()){
+                    clientConnection.sendTCP(new MessageSO(3));
+                }
+            }
+        }).start();
     }
 
     public class MyBinder extends Binder {
@@ -133,12 +143,12 @@ public class ClientService extends Service {
                     volume = volumeSO.getVolume();
                     setNoiseCounter(getNoiseCounter() + volumeSO.getVolume());
                 }
-                if (object instanceof MessageSO){
+                if (object instanceof MessageSO) {
                     MessageSO messageSO = (MessageSO) object;
                     switch (messageSO.getCode()){
                         case MessageSO.READY_FOR_RECEIVING_VOICE:
                             startVoiceReceiving();
-                        break;
+                            break;
                     }
                 }
             }
@@ -155,22 +165,25 @@ public class ClientService extends Service {
     }
 
     public void letMeHearBaby(){
-
         final MessageSO messageSO = new MessageSO();
         messageSO.setCode(1);
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if(clientConnection!= null && clientConnection.isConnected()){
                 clientConnection.sendTCP(messageSO);
+                }
             }
         }).start();
     }
 
     public void startVoiceReceiving(){
         msc = new MediaStreamClient(ClientService.this, ip, ServerService.PORT);
-
     }
 
+    public void setIsLoudMessageSent(boolean isLoudMessageSent) {
+        this.isLoudMessageSent = isLoudMessageSent;
+    
     public void alertDialogReceived(){
         noiseCounter = 0;
     }

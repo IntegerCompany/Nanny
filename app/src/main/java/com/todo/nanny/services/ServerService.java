@@ -38,11 +38,6 @@ public class ServerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-
-
-
-
     }
 
 
@@ -109,13 +104,13 @@ public class ServerService extends Service {
                     super.received(connection, object);
                     serverConnection = connection;
                     Log.d("ServerService", "Server: we have this object from client " + object.getClass().getName());
-                    if (object instanceof SimpleObject){
-                        Log.d("ServerService", "Yes! its Simple object with: "  + ((SimpleObject) object).getValue());
-                        Intent it = new Intent(getApplicationContext(),ServerActivity.class);
+                    if (object instanceof SimpleObject) {
+                        Log.d("ServerService", "Yes! its Simple object with: " + ((SimpleObject) object).getValue());
+                        Intent it = new Intent(getApplicationContext(), ServerActivity.class);
 //                        it.setComponent(new ComponentName(getApplicationContext().getPackageName(), ServerActivity.class.getName()));
                         it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         getApplicationContext().startActivity(it);
-                    }else if(object instanceof MessageSO){
+                    } else if (object instanceof MessageSO) {
                         MessageSO message = (MessageSO) object;
                         int code = message.getCode();
                         switch (code){
@@ -124,11 +119,16 @@ public class ServerService extends Service {
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if(serverConnection!= null && serverConnection.isConnected()){
+                                        if (serverConnection != null && serverConnection.isConnected()) {
                                             serverConnection.sendTCP(new MessageSO(2));
                                         }
                                     }
                                 }).start();
+                            }
+                            break;
+                            case 3: {
+
+                                start();
                                 break;
                             }
                         }
@@ -149,6 +149,7 @@ public class ServerService extends Service {
     }
 
     public void startVoiceTransfering(){
+        stop();
         mss = new MediaStreamServer(ServerService.this, PORT);
     }
 
@@ -161,7 +162,7 @@ public class ServerService extends Service {
             mss.stop();
         }
 
-        stop();
+        //start();
     }
 
     public class ServerBinder extends Binder {
@@ -201,6 +202,7 @@ public class ServerService extends Service {
     public void stop() {
         if (mRecorder != null) {
             mRecorder.stop();
+            mRecorder.reset();
             mRecorder.release();
             mRecorder = null;
         }
