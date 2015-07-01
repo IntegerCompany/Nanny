@@ -26,6 +26,9 @@ public class ClientService extends Service {
     Connection clientConnection;
     boolean isLoudMessageSent;
     String ip;
+
+    //Used to count voice volume from server
+    int noiseCounter = 0, volume = 0;
     
 
     MediaStreamClient msc;
@@ -82,9 +85,7 @@ public class ClientService extends Service {
         if (msc !=null){
             msc.stop();
         }
-        if (client != null){
-            client.stop();
-        }
+
     }
 
     public class MyBinder extends Binder {
@@ -127,20 +128,15 @@ public class ClientService extends Service {
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
                 if(object instanceof VolumeSO){
-                    VolumeSO volume = (VolumeSO) object;
-                    Log.d("ClientService", "Volume: " + volume.getVolume());
-                    if (!isLoudMessageSent){
-                        if (volume.getVolume() > 30000) {
-                            isLoudMessageSent = true;
-                            Intent intent = new Intent().setAction("com.todo.nanny.alarm");
-                            getApplicationContext().sendBroadcast(intent);
-                        }
-                    }
+                    VolumeSO volumeSO = (VolumeSO) object;
+                    Log.d("ClientService", "Volume: " + volumeSO.getVolume());
+                    volume = volumeSO.getVolume();
+                    setNoiseCounter(getNoiseCounter() + volumeSO.getVolume());
                 }
                 if (object instanceof MessageSO){
                     MessageSO messageSO = (MessageSO) object;
                     switch (messageSO.getCode()){
-                        case 2:
+                        case MessageSO.READY_FOR_RECEIVING_VOICE:
                             startVoiceReceiving();
                         break;
                     }
@@ -176,7 +172,21 @@ public class ClientService extends Service {
     }
 
     public void alertDialogReceived(){
-        isLoudMessageSent = false;
+        noiseCounter = 0;
     }
-    
+
+    public int getNoiseCounter() {
+        return noiseCounter;
+    }
+
+    public void setNoiseCounter(int noiseCounter) {
+        this.noiseCounter = noiseCounter;
+        if (!isLoudMessageSent){
+            if (noiseCounter > 120000) {
+                isLoudMessageSent = true;
+                Intent intent = new Intent().setAction("com.todo.nanny.alarm");
+                getApplicationContext().sendBroadcast(intent);
+            }
+        }
+    }
 }

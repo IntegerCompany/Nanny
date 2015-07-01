@@ -119,7 +119,7 @@ public class ServerService extends Service {
                         MessageSO message = (MessageSO) object;
                         int code = message.getCode();
                         switch (code){
-                            case 1: {
+                            case MessageSO.LET_ME_HEAR_BABY: {
                                 startVoiceTransfering();
                                 new Thread(new Runnable() {
                                     @Override
@@ -155,7 +155,7 @@ public class ServerService extends Service {
 
 
     public void stopWorking() {
-        server.stop();
+
 
         if(mss!=null) {
             mss.stop();

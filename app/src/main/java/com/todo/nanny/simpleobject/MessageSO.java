@@ -5,7 +5,7 @@ package com.todo.nanny.simpleobject;
  */
 public class MessageSO {
 
-
+public static final int LET_ME_HEAR_BABY = 1, READY_FOR_RECEIVING_VOICE = 2, START_SERVER_RECORDER = 3;
 
     private int code;
 
