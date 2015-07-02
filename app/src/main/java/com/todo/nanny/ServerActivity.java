@@ -11,12 +11,14 @@ import android.content.pm.ActivityInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -38,6 +40,7 @@ public class ServerActivity extends Activity {
     FloatingActionButton button1;
     ImageButton imageButton;
     View start_view, new_view;
+    Button btnCheckWifiSettings;
 
 
     /**
@@ -48,6 +51,7 @@ public class ServerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
         LayoutInflater inflater = getLayoutInflater();
+
 
         start_view = inflater.inflate(R.layout.server_show_id, null);
         new_view = inflater.inflate(R.layout.server_sleeping_baby, null);
@@ -63,6 +67,14 @@ public class ServerActivity extends Activity {
 
         textView1 = (TextView) findViewById(R.id.tv_ip_address);
         textView1.setText(ipAddress);
+        btnCheckWifiSettings = (Button) findViewById(R.id.btnCheckWifiSettings);
+        btnCheckWifiSettings.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            }
+        });
+        btnCheckWifiSettings.setVisibility(View.GONE);
 
         button1.setOnClickListener(new OnClickListener() {
             @Override
@@ -90,11 +102,16 @@ public class ServerActivity extends Activity {
                     textView1.append("Error: " + intent.getStringExtra("msg") + "\n");
                     //button1.setText("Start");
                 }
+                if (intent.getAction().equals("android.net.wifi.STATE_CHANGE")){
+                    checkAndHandleWifiState();
+                }
             }
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction("tw.rascov.MediaStreamer.ERROR");
+        filter.addAction("android.net.wifi.STATE_CHANGE");
         registerReceiver(receiver, filter);
+        checkAndHandleWifiState();
     }
 
 
@@ -114,6 +131,7 @@ public class ServerActivity extends Activity {
             }
         };
         bindService(new Intent(this, ServerService.class),serviceConnection , BIND_AUTO_CREATE);
+        checkAndHandleWifiState();
     }
 
     public void addView(View newView) {
@@ -146,6 +164,13 @@ public class ServerActivity extends Activity {
         return (ViewGroup) findViewById(R.id.container_server_main);
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkAndHandleWifiState();
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -167,4 +192,23 @@ public class ServerActivity extends Activity {
         startActivity(intent);
         finish();
     }
+
+
+
+    private void checkAndHandleWifiState() {
+        if (textView1 != null & btnCheckWifiSettings != null & button1 != null) {
+            if (AppState.isWifiConnected()) {
+                textView1.setVisibility(View.VISIBLE);
+                btnCheckWifiSettings.setVisibility(View.GONE);
+                button1.setClickable(true);
+            } else {
+                textView1.setVisibility(View.GONE);
+                btnCheckWifiSettings.setVisibility(View.VISIBLE);
+                button1.setClickable(false);
+            }
+        }
+    }
+
+
+
 }
