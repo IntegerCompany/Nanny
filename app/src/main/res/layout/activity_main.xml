@@ -7,17 +7,23 @@
 
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:layout_width="match_parent"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         app:met_baseColor="@color/white"
         app:met_primaryColor="@color/white"
-        app:met_errorColor="#ddaa00"
-        android:hint="Enter ip here xxx.xxx.x.x"
+        app:met_errorColor="@color/white_pressed"
+        app:met_floatingLabel="highlight"
+        app:met_minCharacters="7"
+        app:met_maxCharacters="15"
+        android:inputType="numberDecimal"
+        android:hint="Enter ip here"
         android:textSize="28dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:id="@+id/et_enter_ip_here" />
+        android:id="@+id/et_enter_ip_here"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold" />
 
     <ImageButton
         android:layout_width="80dp"
