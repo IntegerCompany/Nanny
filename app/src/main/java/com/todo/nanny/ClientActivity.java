@@ -72,26 +72,6 @@ public class ClientActivity extends Activity {
         startSignalListener();
 
 
-//        button1.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(button1.getText().toString().equals("Start")) {
-//                    button1.setText("Stop");
-//                    ip = editText1.getText().toString();
-//                    textView1.append("Starting client, " + ip + ":" + ServerService.PORT + "\n");
-//                    intent.putExtra("ip", ip);
-//                    clientService.startClient(ip);
-//                }
-//                else if(button1.getText().toString().equals("Stop")) {
-//
-//
-//                    textView1.append("Stopping client\n");
-//                    clientService.stopClient();
-//                   clientService.setIsLoudMessageSent(false);
-//
-//                }
-//            }
-//        });
 
         bindMyService();
 
@@ -124,6 +104,8 @@ public class ClientActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(receiver);
+        clientService.stopDataTransfering();
+        unbindService(sConn);
     }
 
     private int getWifiSignal(){
