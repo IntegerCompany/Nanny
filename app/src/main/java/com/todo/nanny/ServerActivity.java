@@ -102,14 +102,14 @@ public class ServerActivity extends Activity {
                     textView1.append("Error: " + intent.getStringExtra("msg") + "\n");
                     //button1.setText("Start");
                 }
-                if (intent.getAction().equals("android.net.wifi.CONNECTION_CHANGE")){
+                if (intent.getAction().equals("android.net.wifi.STATE_CHANGE")){
                     checkAndHandleWifiState();
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction("tw.rascov.MediaStreamer.ERROR");
-        filter.addAction("android.net.wifi.CONNECTION_CHANGE");
+        filter.addAction("android.net.wifi.STATE_CHANGE");
         registerReceiver(receiver, filter);
         checkAndHandleWifiState();
     }
@@ -153,7 +153,7 @@ public class ServerActivity extends Activity {
         imageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplication(),LauncherActivity.class));
+                startActivity(new Intent(getApplication(), LauncherActivity.class));
                 finish();
             }
         });
