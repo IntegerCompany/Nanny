@@ -46,15 +46,11 @@ public class ServerActivity extends Activity {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_server);
         LayoutInflater inflater = getLayoutInflater();
 
         start_view = inflater.inflate(R.layout.server_show_id, null);
         new_view = inflater.inflate(R.layout.server_sleeping_baby, null);
-
-        addView(start_view);
-
-
 
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -72,7 +68,7 @@ public class ServerActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                replaceView(start_view, new_view);
+                addView(new_view);
 
                 if (button1.getTitle().equals("Start")) {
                     button1.setTitle("Stop");
@@ -120,17 +116,12 @@ public class ServerActivity extends Activity {
         bindService(new Intent(this, ServerService.class),serviceConnection , BIND_AUTO_CREATE);
     }
 
-    public void addView(View v) {
-        ViewGroup parent = (ViewGroup) findViewById(R.id.container_sleeping_baby_client);
-        parent.addView(v);
-    }
-
-    public void replaceView(View currentView, View newView) {
+    public void addView(View newView) {
         ViewGroup parent = getMyParentView();
         if (parent == null) {
             return;
         }
-        removeView(currentView);
+        start_view.setVisibility(View.GONE);
         parent.addView(newView);
 
         button1.animate().translationY(400f);
@@ -154,16 +145,8 @@ public class ServerActivity extends Activity {
     }
 
     public ViewGroup getMyParentView() {
-        return (ViewGroup) findViewById(R.id.container_sleeping_baby_client);
+        return (ViewGroup) findViewById(R.id.container_server_main);
     }
-
-    public void removeView(View view) {
-        ViewGroup parent = getMyParentView();
-        if (parent != null) {
-            parent.removeView(view);
-        }
-    }
-
 
     @Override
     protected void onStop() {

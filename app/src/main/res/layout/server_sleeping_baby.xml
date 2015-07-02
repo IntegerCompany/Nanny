@@ -19,9 +19,8 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/pause_with_shadow"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="26dp"
         android:visibility="visible"
-
         android:layout_marginTop="16dp" />
 
 </RelativeLayout>
