@@ -137,10 +137,8 @@ public class ServerActivity extends Activity {
             public void onClick(View view) {
                 startActivity(new Intent(getApplication(),LauncherActivity.class));
                 finish();
-
             }
         });
-
         Log.i("Replacing", " View");
     }
 
