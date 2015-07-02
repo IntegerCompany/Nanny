@@ -97,6 +97,9 @@
             android:id="@+id/tv_volume"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/sb_volume" />
+            android:textSize="36sp"
+            android:textColor="#ff918383"
+            android:text="00:00:00" />
     </RelativeLayout>
 
     <RelativeLayout
