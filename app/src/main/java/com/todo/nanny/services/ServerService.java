@@ -7,6 +7,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -33,6 +34,7 @@ public class ServerService extends Service {
     private MediaRecorder mRecorder = null;
     Handler handler;
     boolean endHandler = false;
+    boolean isRecorderBroken = false;
 
     public ServerService() {
     }
@@ -45,9 +47,6 @@ public class ServerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-
-
         return START_REDELIVER_INTENT;
     }
 
@@ -68,7 +67,9 @@ public class ServerService extends Service {
             public void run() {
                 if (!endHandler) {
                     int aml = getAmplitude();
-
+                    if(isRecorderBroken){
+                        reset();
+                    }
                     if (aml > 100) {
                         sendAlarm(aml);
                     }
@@ -130,7 +131,7 @@ public class ServerService extends Service {
                             }
                             break;
                             case MessageSO.START_SERVER_RECORDER: {
-                                start();
+                                reset();
                                 break;
                             }
                         }
@@ -198,12 +199,38 @@ public class ServerService extends Service {
         }
     }
 
-    public void stop() {
+    public void reset(){
+        if (mRecorder != null) {
+            //mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mRecorder.setOutputFile("/dev/null");
+            try {
+                mRecorder.prepare();
+                mRecorder.start();
+                isRecorderBroken = false;
+            } catch (IllegalStateException e) {
+                isRecorderBroken = true;
+                Log.d("ServerService", "IllegalState");
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void delete(){
         if (mRecorder != null) {
             mRecorder.stop();
             mRecorder.reset();
             mRecorder.release();
             mRecorder = null;
+        }
+    }
+
+    public void stop() {
+        if (mRecorder != null) {
+            mRecorder.stop();
+            mRecorder.reset();
         }
     }
 
@@ -223,7 +250,7 @@ public class ServerService extends Service {
             server.stop();
         }
         endHandler = true;
-        stop();
+        delete();
     }
 
 }

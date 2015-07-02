@@ -95,9 +95,7 @@ public class ClientService extends Service {
         if (msc !=null){
             msc.stop();
         }
-//        if (client != null){
-//            client.stop();
-//        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {

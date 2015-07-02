@@ -44,7 +44,7 @@
         android:layout_height="match_parent"
         android:id="@+id/container_sleeping_baby_client"
         android:background="@color/pink_baby"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:layout_width="300dp"
@@ -57,7 +57,7 @@
         <ImageButton
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:id="@+id/imageButton"
+            android:id="@+id/ibtn_pause_baby_listening"
             android:layout_centerHorizontal="true"
             android:background="@drawable/pause_with_shadow"
             android:layout_alignParentBottom="false"
@@ -82,7 +82,7 @@
         android:layout_height="match_parent"
         android:id="@+id/container_crying_baby_client"
         android:background="@color/white"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageButton
             android:layout_width="80dp"
@@ -97,7 +97,7 @@
         <ImageButton
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:id="@+id/ibtn_pause_baby_listening"
+            android:id="@+id/ibtn_pause_baby_listening1"
             android:layout_centerHorizontal="true"
             android:background="@drawable/pause_with_shadow"
             android:layout_alignParentBottom="false"
