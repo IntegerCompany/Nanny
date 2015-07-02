@@ -182,7 +182,7 @@ public class ServerService extends Service {
             mss.stop();
             Log.d("ServerService", "Voice Stopped");
         }
-        start();
+        isVoiceTransfer = false;
     }
 
     public class ServerBinder extends Binder {
@@ -214,6 +214,7 @@ public class ServerService extends Service {
             mRecorder.prepare();
             mRecorder.start();
             isRecorderBroken = false;
+                Log.d("ServerService", "Started");
             } catch (IllegalStateException e) {
                 Log.d("ServerService", "Can't start");
                 isRecorderBroken = true;
@@ -221,7 +222,6 @@ public class ServerService extends Service {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Log.d("ServerService", "Started");
         }
 
 
