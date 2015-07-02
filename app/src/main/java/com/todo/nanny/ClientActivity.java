@@ -185,20 +185,20 @@ public class ClientActivity extends Activity {
         tvVolume = (TextView) findViewById(R.id.tv_volume);
 
         sbVolume = (SeekBar) findViewById(R.id.sb_volume);
-        sbVolume.setMax(50000);
-        sbVolume.setProgress(100);
+        sbVolume.setMax(40000);
+        sbVolume.setProgress(20000);
+
+        tvVolume.setText("" + sbVolume.getProgress());
+
         sbVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
                 float vol = (float) (arg0.getProgress()) / (float) (arg0.getMax());
-
-
-
             }
 
             @Override
             public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
-                tvVolume.setText(arg1);
+                tvVolume.setText("" + arg1);
                 clientService.setMaxVolume(arg1);
 
             }

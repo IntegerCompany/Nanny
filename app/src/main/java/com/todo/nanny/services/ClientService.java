@@ -153,25 +153,25 @@ public class ClientService extends Service {
                 super.received(connection, object);
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
-                if(object instanceof VolumeSO){
+                if (object instanceof VolumeSO) {
                     VolumeSO volumeSO = (VolumeSO) object;
                     Log.d("ClientService", "Volume: " + volumeSO.getVolume());
                     volume = volumeSO.getVolume();
-                    if(volume > maxVolume){
-                        setNoiseCounter(getNoiseCounter()+1);
-                        Log.d("ClientService", ""+ noiseCounter);
+                    if (volume > maxVolume) {
+                        setNoiseCounter(getNoiseCounter() + 1);
+                        Log.d("ClientService", "" + noiseCounter);
                     }
 
                 }
                 if (object instanceof MessageSO) {
                     MessageSO messageSO = (MessageSO) object;
-                    switch (messageSO.getCode()){
+                    switch (messageSO.getCode()) {
                         case MessageSO.READY_FOR_RECEIVING_VOICE:
                             startVoiceReceiving();
                             break;
                     }
                 }
-                if (object instanceof Long){
+                if (object instanceof Long) {
                     long serverStartTime = (long) object;
                     Intent intent = new Intent("com.todo.nanny.serverStartTime");
                     intent.putExtra("serverStartTime", serverStartTime);
@@ -245,7 +245,9 @@ public class ClientService extends Service {
     }
 
     public void stopDataTransfering(){
-        clientConnection.close();
+        if(clientConnection != null){
+            clientConnection.close();
+        }
         client.stop();
         if(msc!=null){
             msc.stop();
