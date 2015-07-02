@@ -236,11 +236,19 @@ public class ClientService extends Service {
     public void setNoiseCounter(int noiseCounter) {
         this.noiseCounter = noiseCounter;
         if (!isLoudMessageSent){
-            if (noiseCounter > 5) {
+            if (noiseCounter > 2) {
                 isLoudMessageSent = true;
                 Intent intent = new Intent().setAction("com.todo.nanny.alarm");
                 getApplicationContext().sendBroadcast(intent);
             }
+        }
+    }
+
+    public void stopDataTransfering(){
+        clientConnection.close();
+        client.stop();
+        if(msc!=null){
+            msc.stop();
         }
     }
 }

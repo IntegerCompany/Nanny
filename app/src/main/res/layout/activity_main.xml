@@ -80,8 +80,9 @@
             android:layout_alignBottom="@+id/imageView2"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="33dp"
-            android:textSize="16sp"
-            android:textColor="#ff918383" />
+            android:textSize="36sp"
+            android:textColor="#ff918383"
+            android:text="00:00:00" />
     </RelativeLayout>
 
     <RelativeLayout
