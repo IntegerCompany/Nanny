@@ -91,18 +91,16 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/ear_with_shadow"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
-            android:visibility="visible" />
+            android:layout_marginBottom="16dp" />
 
         <ImageButton
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:id="@+id/ibtn_pause_baby_listening1"
+            android:id="@+id/ibtn_mute_baby"
             android:layout_centerHorizontal="true"
             android:background="@drawable/pause_with_shadow"
             android:layout_alignParentBottom="false"
             android:layout_marginBottom="16dp"
-            android:visibility="visible"
             android:layout_alignParentTop="true"
             android:layout_marginTop="16dp" />
 

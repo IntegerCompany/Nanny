@@ -159,7 +159,7 @@ public class ClientService extends Service {
                     volume = volumeSO.getVolume();
                     if(volume > 20000){
                         setNoiseCounter(getNoiseCounter()+1);
-                        Log.d("NoiseCounter", ""+ noiseCounter);
+                        Log.d("ClientService", ""+ noiseCounter);
                     }
 
                 }

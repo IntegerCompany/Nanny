@@ -32,6 +32,7 @@ public class ClientActivity extends Activity {
     //Cry baby view
     ImageButton pauseBabyListening;
     ImageButton confirmVoiceTransfer;
+    ImageButton muteBaby;
 
 
     MaterialEditText editText1;
@@ -270,6 +271,16 @@ public class ClientActivity extends Activity {
 
         confirmVoiceTransfer = (ImageButton) findViewById(R.id.ibtn_confirm_voice_transfer);
         confirmVoiceTransfer.setOnClickListener(oclStart);
+
+        muteBaby = (ImageButton) findViewById(R.id.ibtn_mute_baby);
+        muteBaby.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSleepingScreen();
+                clientService.setNoiseCounter(0);
+                clientService.setIsLoudMessageSent(false);
+            }
+        });
 
     }
 
