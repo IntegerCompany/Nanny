@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -176,6 +177,7 @@ public class ClientService extends Service {
                     long serverStartTime = (long) object;
                     Intent intent = new Intent("com.todo.nanny.serverStartTime");
                     intent.putExtra("serverStartTime", serverStartTime);
+                    Log.d("ClientService", "Server start time = " + serverStartTime + ", current time: " + System.currentTimeMillis());
                     getApplicationContext().sendBroadcast(intent);
                 }
             }

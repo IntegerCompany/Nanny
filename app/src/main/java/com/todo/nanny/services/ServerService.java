@@ -95,7 +95,7 @@ public class ServerService extends Service {
             server.getKryo().register(Long.class);
 
             server.start();
-            serverStartTime = SystemClock.elapsedRealtime();
+            serverStartTime = System.currentTimeMillis();
             Log.d("ServerService", "Port: " + (PORT + 1));
             server.bind(PORT + 1);
             server.addListener(new Listener() {
@@ -104,7 +104,7 @@ public class ServerService extends Service {
                     super.connected(connection);
                     serverConnection = connection;
                     serverConnection.sendTCP(serverStartTime);
-                    Log.d("ServerService", "Server: Someone connected");
+                    Log.d("ServerService", "Server: Someone connected, sending server start time: " + serverStartTime);
                 }
 
                 @Override

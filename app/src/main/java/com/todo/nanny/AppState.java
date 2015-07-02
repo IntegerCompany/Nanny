@@ -4,9 +4,12 @@ package com.todo.nanny;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.TimeZone;
+
 public class AppState {
 
     private static final String LOG_STATUS = "LogStatus" ;
+
 
 
     private static Context mContext;
@@ -18,6 +21,8 @@ public class AppState {
     public static void setupAppState(Context context){
         mContext = context;
         sPrefLog = context.getSharedPreferences("egocentrum", Context.MODE_PRIVATE);
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
 
     }
 

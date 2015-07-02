@@ -15,17 +15,16 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.todo.nanny.helperclasses.EpochTimer;
 import com.todo.nanny.services.ClientService;
 
 public class ClientActivity extends Activity {
@@ -48,7 +47,7 @@ public class ClientActivity extends Activity {
     RelativeLayout containerSleep;
     RelativeLayout containerCry;
     BroadcastReceiver receiver;
-    Chronometer chronometer;
+    EpochTimer epochTimer;
     long timeServerStart = 0;
 
     Handler handler;
@@ -170,10 +169,11 @@ public class ClientActivity extends Activity {
 
         editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
-        chronometer = (Chronometer) findViewById(R.id.chronometer);
+        epochTimer = new EpochTimer((TextView) findViewById(R.id.tvChronometer));
+        epochTimer.start();
         if (timeServerStart != 0){
-            chronometer.setBase(timeServerStart);
-            chronometer.start();
+            epochTimer.setTimeStart(timeServerStart);
+            epochTimer.start();
         }
 
         containerSleep = (RelativeLayout) findViewById(R.id.container_sleeping_baby_client);
@@ -284,10 +284,10 @@ public class ClientActivity extends Activity {
                 }else if(intent.getAction().equals(getString(R.string.show_sleeping_baby_screen_action))){
                     showSleepingScreen();
                 }else if(intent.getAction().equals(getString(R.string.set_server_start_time_action))){
-                    if (chronometer != null){
-                        timeServerStart = intent.getLongExtra("serverStartTime", SystemClock.elapsedRealtime());
-                        chronometer.setBase(timeServerStart);
-                        chronometer.start();
+                    if (epochTimer != null){
+                        timeServerStart = intent.getLongExtra("serverStartTime", System.currentTimeMillis());
+                        epochTimer.setTimeStart(timeServerStart);
+                        epochTimer.start();
                     }
                 }
             }
@@ -302,4 +302,7 @@ public class ClientActivity extends Activity {
 
         registerReceiver(receiver, filter);
     }
+
+
+
 }
