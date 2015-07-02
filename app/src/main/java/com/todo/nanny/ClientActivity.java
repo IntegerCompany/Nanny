@@ -183,6 +183,7 @@ public class ClientActivity extends Activity {
         clientService.setIsLoudMessageSent(false);
         pauseBabyListening.setOnClickListener(oclStart);
         pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.pause_with_shadow));
+        clientService.setNoiseCounter(0);
     }
     private void initViewsById(){
 

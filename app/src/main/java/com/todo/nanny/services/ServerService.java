@@ -72,6 +72,9 @@ public class ServerService extends Service {
                     if(aml == 0){
                         counter ++;
                     }
+                    if(aml>0){
+                        isRecorderBroken = false;
+                    }
                     getAmplitude();
                     if(isRecorderBroken && !isVoiceTransfer){
                         start();
@@ -84,8 +87,6 @@ public class ServerService extends Service {
                         sendAlarm(aml);
                     }
                     Log.d("ServerService", "" + aml);
-
-
                     handler.postDelayed(this, 1000);
                 }
             }
@@ -154,7 +155,7 @@ public class ServerService extends Service {
                 public void disconnected(Connection connection) {
                     super.disconnected(connection);
                     serverConnection = connection;
-                    start();
+                    isVoiceTransfer = false;
                     Log.d("ServerService", "Server: Client disconnected");
                 }
             });
@@ -198,8 +199,7 @@ public class ServerService extends Service {
     }
 
     public void start() {
-        stop();
-        if (mRecorder == null) {
+             stop();
             try {
             mRecorder = new MediaRecorder();
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -212,12 +212,13 @@ public class ServerService extends Service {
             } catch (IllegalStateException e) {
                 Log.d("ServerService", "Can't start");
                 isRecorderBroken = true;
+                stop();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             Log.d("ServerService", "Started");
         }
-    }
+
 
 
     public void stop() {
