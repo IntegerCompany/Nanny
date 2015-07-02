@@ -68,7 +68,8 @@ public class ServerService extends Service {
                 if (!endHandler) {
                     int aml = getAmplitude();
                     if(isRecorderBroken){
-                        reset();
+                        stop();
+                        start();
                     }
                     if (aml > 100) {
                         sendAlarm(aml);
@@ -131,7 +132,7 @@ public class ServerService extends Service {
                             }
                             break;
                             case MessageSO.START_SERVER_RECORDER: {
-                                reset();
+                                start();
                                 break;
                             }
                         }
@@ -152,6 +153,7 @@ public class ServerService extends Service {
     }
 
     public void startVoiceTransfering(){
+        isRecorderBroken = true;
         stop();
         mss = new MediaStreamServer(ServerService.this, PORT);
     }
@@ -185,52 +187,40 @@ public class ServerService extends Service {
 
     public void start() {
         if (mRecorder == null) {
+            try {
             mRecorder = new MediaRecorder();
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             mRecorder.setOutputFile("/dev/null");
-            try {
-                mRecorder.prepare();
+            mRecorder.prepare();
+            mRecorder.start();
+            isRecorderBroken = false;
+            } catch (IllegalStateException e) {
+                Log.d("ServerService", "Can't start");
+                isRecorderBroken = true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            mRecorder.start();
+            Log.d("ServerService", "Started");
         }
     }
 
-    public void reset(){
-        if (mRecorder != null) {
-            //mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mRecorder.setOutputFile("/dev/null");
-            try {
-                mRecorder.prepare();
-                mRecorder.start();
-                isRecorderBroken = false;
-            } catch (IllegalStateException e) {
-                isRecorderBroken = true;
-                Log.d("ServerService", "IllegalState");
-            }catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void delete(){
-        if (mRecorder != null) {
-            mRecorder.stop();
-            mRecorder.reset();
-            mRecorder.release();
-            mRecorder = null;
-        }
-    }
 
     public void stop() {
         if (mRecorder != null) {
-            mRecorder.stop();
-            mRecorder.reset();
+            if (isRecorderBroken) {
+                try {
+                    mRecorder.stop();
+                    mRecorder.reset();
+                    mRecorder.release();
+                    mRecorder = null;
+                    isRecorderBroken = false;
+                    Log.d("ServerService", "Stopped");
+                } catch (IllegalStateException e) {
+                    Log.d("ServerService", "Can't stop");
+                }
+            }
         }
     }
 
@@ -250,7 +240,7 @@ public class ServerService extends Service {
             server.stop();
         }
         endHandler = true;
-        delete();
+        stop();
     }
 
 }
