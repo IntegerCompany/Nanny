@@ -3,6 +3,8 @@ package com.todo.nanny;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import java.util.TimeZone;
 
@@ -35,5 +37,12 @@ public class AppState {
         }
 
         return false;
+    }
+
+    public static boolean isWifiConnected(){
+        ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        return mWifi.isConnected();
     }
 }
