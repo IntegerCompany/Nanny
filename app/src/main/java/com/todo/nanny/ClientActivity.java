@@ -97,8 +97,10 @@ public class ClientActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (!isAlarm) startService(intent);
-        bindService(intent, sConn, 0);
+        if (!isAlarm) {
+            startService(intent);
+            bindService(intent, sConn, 0);
+        }
 
     }
 
@@ -198,6 +200,7 @@ public class ClientActivity extends Activity {
                 ip = editText1.getText().toString();
                 intent.putExtra("ip", ip);
                 clientService.startClient(ip);
+                Log.d("ClientActivity","Fucking start");
             }
         });
 

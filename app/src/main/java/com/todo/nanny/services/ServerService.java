@@ -35,6 +35,9 @@ public class ServerService extends Service {
     Handler handler;
     boolean endHandler = false;
     boolean isRecorderBroken = false;
+    boolean isVoiceTransfer = false;
+    int aml;
+    int counter;
 
     public ServerService() {
     }
@@ -66,10 +69,16 @@ public class ServerService extends Service {
         final Runnable r = new Runnable() {
             public void run() {
                 if (!endHandler) {
-                    int aml = getAmplitude();
-                    if(isRecorderBroken){
-                        stop();
+                    if(aml == 0){
+                        counter ++;
+                    }
+                    getAmplitude();
+                    if(isRecorderBroken && !isVoiceTransfer){
                         start();
+                    }
+                    if(!isVoiceTransfer && counter > 5){
+                        counter = 0;
+                        isRecorderBroken = true;
                     }
                     if (aml > 100) {
                         sendAlarm(aml);
@@ -120,6 +129,7 @@ public class ServerService extends Service {
                         int code = message.getCode();
                         switch (code){
                             case MessageSO.LET_ME_HEAR_BABY: {
+                                isVoiceTransfer = true;
                                 startVoiceTransfering();
                                 new Thread(new Runnable() {
                                     @Override
@@ -132,7 +142,8 @@ public class ServerService extends Service {
                             }
                             break;
                             case MessageSO.START_SERVER_RECORDER: {
-                                start();
+                                stopWorking();
+
                                 break;
                             }
                         }
@@ -143,6 +154,7 @@ public class ServerService extends Service {
                 public void disconnected(Connection connection) {
                     super.disconnected(connection);
                     serverConnection = connection;
+                    start();
                     Log.d("ServerService", "Server: Client disconnected");
                 }
             });
@@ -153,7 +165,6 @@ public class ServerService extends Service {
     }
 
     public void startVoiceTransfering(){
-        isRecorderBroken = true;
         stop();
         mss = new MediaStreamServer(ServerService.this, PORT);
     }
@@ -163,8 +174,9 @@ public class ServerService extends Service {
     public void stopWorking() {
         if(mss!=null) {
             mss.stop();
+            Log.d("ServerService", "Voice Stopped");
         }
-        //start();
+        start();
     }
 
     public class ServerBinder extends Binder {
@@ -186,6 +198,7 @@ public class ServerService extends Service {
     }
 
     public void start() {
+        stop();
         if (mRecorder == null) {
             try {
             mRecorder = new MediaRecorder();
@@ -209,13 +222,14 @@ public class ServerService extends Service {
 
     public void stop() {
         if (mRecorder != null) {
-            if (isRecorderBroken) {
+            if (isRecorderBroken || isVoiceTransfer) {
                 try {
                     mRecorder.stop();
                     mRecorder.reset();
                     mRecorder.release();
                     mRecorder = null;
                     isRecorderBroken = false;
+                    isVoiceTransfer = false;
                     Log.d("ServerService", "Stopped");
                 } catch (IllegalStateException e) {
                     Log.d("ServerService", "Can't stop");
@@ -224,13 +238,17 @@ public class ServerService extends Service {
         }
     }
 
-    public int getAmplitude() {
-        if (mRecorder != null)
-            return mRecorder.getMaxAmplitude();
-        else
-            return 0;
-
+    public void getAmplitude() {
+        aml = 0;
+        if (mRecorder != null){
+            try{
+                aml = mRecorder.getMaxAmplitude();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
+
 
     public void killAll(){
         if(mss!=null){
