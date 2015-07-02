@@ -1,6 +1,7 @@
 package com.todo.nanny;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,13 +9,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -294,8 +301,11 @@ public class ClientActivity extends Activity {
                     //button1.setText("Start");
                 }else if(intent.getAction().equals(getString(R.string.alarm_action))){
 
+                    vibrate();
+                    playAlertSound();
                     isAlarm = true;
                     wakeUpActivityAction();
+
 
                 }else if(intent.getAction().equals(getString(R.string.wrong_ip_action))){
 
@@ -314,6 +324,7 @@ public class ClientActivity extends Activity {
                 }else if(intent.getAction().equals(getString(R.string.connection_error))){
                     //button1.setText("Start");
                     //TODO alert
+
                 }else if(intent.getAction().equals(getString(R.string.show_sleeping_baby_screen_action))){
                     showSleepingScreen();
                 }else if(intent.getAction().equals(getString(R.string.set_server_start_time_action))){
@@ -337,5 +348,33 @@ public class ClientActivity extends Activity {
     }
 
 
+    private void vibrate(){
+        KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
+        kl.disableKeyguard();
+
+        PowerManager pm = (PowerManager)
+                getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+        wakeLock.acquire();
+
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        // Start without a delay
+        // Vibrate for 100 milliseconds
+        // Sleep for 50 milliseconds
+        long[] pattern = {0, 500, 100, 500, 100};
+
+        //-1 - vibrate 1 time
+        v.vibrate(pattern, -1);
+    }
+
+    private void playAlertSound(){
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        r.play();
+    }
 
 }
