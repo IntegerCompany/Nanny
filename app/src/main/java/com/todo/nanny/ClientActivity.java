@@ -319,8 +319,8 @@ public class ClientActivity extends Activity {
                     //button1.setText("Start");
                 }else if(intent.getAction().equals(getString(R.string.alarm_action))){
 
-                  //  vibrate();
-                  //  playAlertSound();
+                    vibrate();
+                    playAlertSound();
                     isAlarm = true;
                     wakeUpActivityAction();
 
