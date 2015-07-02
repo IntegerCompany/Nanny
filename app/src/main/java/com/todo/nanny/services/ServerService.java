@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -34,6 +35,10 @@ public class ServerService extends Service {
     private MediaRecorder mRecorder = null;
     Handler handler;
     boolean endHandler = false;
+    boolean isRecorderBroken = false;
+    boolean isVoiceTransfer = false;
+    int aml;
+    int counter;
     long serverStartTime;
 
     public ServerService() {
@@ -47,9 +52,6 @@ public class ServerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-
-
         return START_REDELIVER_INTENT;
     }
 
@@ -69,14 +71,24 @@ public class ServerService extends Service {
         final Runnable r = new Runnable() {
             public void run() {
                 if (!endHandler) {
-                    int aml = getAmplitude();
-
+                    if(aml == 0){
+                        counter ++;
+                    }
+                    if(aml>0){
+                        isRecorderBroken = false;
+                    }
+                    getAmplitude();
+                    if(isRecorderBroken && !isVoiceTransfer){
+                        start();
+                    }
+                    if(!isVoiceTransfer && counter > 5){
+                        counter = 0;
+                        isRecorderBroken = true;
+                    }
                     if (aml > 100) {
                         sendAlarm(aml);
                     }
                     Log.d("ServerService", "" + aml);
-
-
                     handler.postDelayed(this, 1000);
                 }
             }
@@ -123,6 +135,7 @@ public class ServerService extends Service {
                         int code = message.getCode();
                         switch (code){
                             case MessageSO.LET_ME_HEAR_BABY: {
+                                isVoiceTransfer = true;
                                 startVoiceTransfering();
                                 new Thread(new Runnable() {
                                     @Override
@@ -135,7 +148,8 @@ public class ServerService extends Service {
                             }
                             break;
                             case MessageSO.START_SERVER_RECORDER: {
-                                start();
+                                stopWorking();
+
                                 break;
                             }
                         }
@@ -146,6 +160,7 @@ public class ServerService extends Service {
                 public void disconnected(Connection connection) {
                     super.disconnected(connection);
                     serverConnection = connection;
+                    isVoiceTransfer = false;
                     Log.d("ServerService", "Server: Client disconnected");
                 }
             });
@@ -165,8 +180,9 @@ public class ServerService extends Service {
     public void stopWorking() {
         if(mss!=null) {
             mss.stop();
+            Log.d("ServerService", "Voice Stopped");
         }
-        //start();
+        start();
     }
 
     public class ServerBinder extends Binder {
@@ -188,37 +204,57 @@ public class ServerService extends Service {
     }
 
     public void start() {
-        if (mRecorder == null) {
+             stop();
+            try {
             mRecorder = new MediaRecorder();
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             mRecorder.setOutputFile("/dev/null");
-            try {
-                mRecorder.prepare();
+            mRecorder.prepare();
+            mRecorder.start();
+            isRecorderBroken = false;
+            } catch (IllegalStateException e) {
+                Log.d("ServerService", "Can't start");
+                isRecorderBroken = true;
+                stop();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            mRecorder.start();
+            Log.d("ServerService", "Started");
         }
-    }
+
+
 
     public void stop() {
         if (mRecorder != null) {
-            mRecorder.stop();
-            mRecorder.reset();
-            mRecorder.release();
-            mRecorder = null;
+            if (isRecorderBroken || isVoiceTransfer) {
+                try {
+                    mRecorder.stop();
+                    mRecorder.reset();
+                    mRecorder.release();
+                    mRecorder = null;
+                    isRecorderBroken = false;
+                    isVoiceTransfer = false;
+                    Log.d("ServerService", "Stopped");
+                } catch (IllegalStateException e) {
+                    Log.d("ServerService", "Can't stop");
+                }
+            }
         }
     }
 
-    public int getAmplitude() {
-        if (mRecorder != null)
-            return mRecorder.getMaxAmplitude();
-        else
-            return 0;
-
+    public void getAmplitude() {
+        aml = 0;
+        if (mRecorder != null){
+            try{
+                aml = mRecorder.getMaxAmplitude();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
+
 
     public void killAll(){
         if(mss!=null){

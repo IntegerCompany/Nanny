@@ -33,6 +33,7 @@ public class ClientActivity extends Activity {
     ImageButton pauseBabyListening;
     ImageButton confirmVoiceTransfer;
 
+
     MaterialEditText editText1;
     TextView textView1;
     String ip;
@@ -49,6 +50,9 @@ public class ClientActivity extends Activity {
     BroadcastReceiver receiver;
     EpochTimer epochTimer;
     long timeServerStart = 0;
+
+    OnClickListener oclStop;
+    OnClickListener oclStart;
 
     Handler handler;
 
@@ -96,8 +100,10 @@ public class ClientActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (!isAlarm) startService(intent);
-        bindService(intent, sConn, 0);
+        if (!isAlarm) {
+            startService(intent);
+            bindService(intent, sConn, 0);
+        }
 
     }
 
@@ -146,10 +152,22 @@ public class ClientActivity extends Activity {
         containerSleep.setVisibility(View.VISIBLE);
         editText1.setVisibility(View.GONE);
         ibtnStart.setVisibility(View.GONE);
+        containerCry.setVisibility(View.GONE);
     }
     private void confirmVoiceTransfer(){
         clientService.letMeHearBaby();
         clientService.setNoiseCounter(0);
+        confirmVoiceTransfer.setOnClickListener(oclStop);
+        confirmVoiceTransfer.setBackground(getResources().getDrawable(R.drawable.ear_with_shadow_green));
+    }
+
+    private void stopVoiceTransfer(){
+        clientService.stopClient();
+        clientService.setIsLoudMessageSent(false);
+        confirmVoiceTransfer.setOnClickListener(oclStart);
+        confirmVoiceTransfer.setBackground(getResources().getDrawable(R.drawable.ear_with_shadow));
+        showSleepingScreen();
+
     }
 
     /**
@@ -157,13 +175,18 @@ public class ClientActivity extends Activity {
      */
     private void pauseListeningMyBaby(){
         clientService.setIsLoudMessageSent(true);
+        pauseBabyListening.setOnClickListener(oclStop);
+        pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.start_with_shadow));
     }
 
     /**
      * on resume listening
      */
     private void resumeListeningMyBaby(){
-
+        clientService.setIsLoudMessageSent(false);
+        pauseBabyListening.setOnClickListener(oclStart);
+        pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.pause_with_shadow));
+        clientService.setNoiseCounter(0);
     }
     private void initViewsById(){
 
@@ -187,8 +210,42 @@ public class ClientActivity extends Activity {
                 ip = editText1.getText().toString();
                 intent.putExtra("ip", ip);
                 clientService.startClient(ip);
+                Log.d("ClientActivity","Fucking start");
             }
         });
+
+        oclStart = new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                switch (view.getId()){
+                    case R.id.ibtn_pause_baby_listening:
+                        pauseListeningMyBaby();
+                        break;
+                    case R.id.ibtn_confirm_voice_transfer:
+                        confirmVoiceTransfer();
+                        break;
+                }
+            }
+        };
+
+        oclStop = new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                switch (view.getId()){
+                    case R.id.ibtn_pause_baby_listening:
+                        resumeListeningMyBaby();
+                        break;
+                    case R.id.ibtn_confirm_voice_transfer:
+                        stopVoiceTransfer();
+                        break;
+                }
+            }
+        };
+
+        pauseBabyListening = (ImageButton) findViewById(R.id.ibtn_pause_baby_listening);
+        pauseBabyListening.setOnClickListener(oclStart);
     }
     private void wakeUpActivityAction(){
         Intent intent = new Intent(getApplication(),ClientActivity.class);
@@ -210,26 +267,9 @@ public class ClientActivity extends Activity {
     }
 
     private void initCryBabyViews(){
-        pauseBabyListening = (ImageButton) findViewById(R.id.ibtn_pause_baby_listening);
+
         confirmVoiceTransfer = (ImageButton) findViewById(R.id.ibtn_confirm_voice_transfer);
-
-        OnClickListener ocl = new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                switch (view.getId()){
-                    case R.id.ibtn_pause_baby_listening:
-                        pauseListeningMyBaby();
-                        break;
-                    case R.id.ibtn_confirm_voice_transfer:
-                        confirmVoiceTransfer();
-                        break;
-                }
-            }
-        };
-
-        pauseBabyListening.setOnClickListener(ocl);
-        confirmVoiceTransfer.setOnClickListener(ocl);
+        confirmVoiceTransfer.setOnClickListener(oclStart);
 
     }
 

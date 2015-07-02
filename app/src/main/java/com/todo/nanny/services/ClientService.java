@@ -93,13 +93,11 @@ public class ClientService extends Service {
     }
 
     public void stopClient(){
-        Log.d(TAG, "startClient");
+        Log.d(TAG, "stopClient");
         if (msc !=null){
             msc.stop();
         }
-//        if (client != null){
-//            client.stop();
-//        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -159,7 +157,7 @@ public class ClientService extends Service {
                     VolumeSO volumeSO = (VolumeSO) object;
                     Log.d("ClientService", "Volume: " + volumeSO.getVolume());
                     volume = volumeSO.getVolume();
-                    if(volume> 20000){
+                    if(volume > 20000){
                         setNoiseCounter(getNoiseCounter()+1);
                         Log.d("NoiseCounter", ""+ noiseCounter);
                     }
