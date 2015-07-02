@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
-import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -27,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +41,8 @@ public class ClientActivity extends Activity {
     ImageButton confirmVoiceTransfer;
     ImageButton muteBaby;
 
+    SeekBar sbVolume;
+    TextView tvVolume;
 
     MaterialEditText editText1;
     TextView textView1;
@@ -125,7 +127,7 @@ public class ClientActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        Log.d("ServerActivity","onBackPressed");
+        Log.d("ServerActivity", "onBackPressed");
         Intent intent = new Intent(getApplication(),LauncherActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -179,6 +181,32 @@ public class ClientActivity extends Activity {
         clientService.setNoiseCounter(0);
     }
     private void initViewsById(){
+
+        tvVolume = (TextView) findViewById(R.id.tv_volume);
+
+        sbVolume = (SeekBar) findViewById(R.id.sb_volume);
+        sbVolume.setMax(50000);
+        sbVolume.setProgress(100);
+        sbVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar arg0) {
+                float vol = (float) (arg0.getProgress()) / (float) (arg0.getMax());
+
+
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+                tvVolume.setText(arg1);
+                clientService.setMaxVolume(arg1);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar arg0) {
+            }
+        });
 
         editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);

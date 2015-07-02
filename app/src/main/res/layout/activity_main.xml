@@ -82,6 +82,21 @@
             android:layout_marginBottom="33dp"
             android:textSize="16sp"
             android:textColor="#ff918383" />
+
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sb_volume"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/tvChronometer" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/tv_volume"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/sb_volume" />
     </RelativeLayout>
 
     <RelativeLayout

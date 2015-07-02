@@ -36,6 +36,8 @@ public class ClientService extends Service {
     private static final int RECONNECTION_TIME = 10000;
     int reconnectionAttempt = 0;
 
+    int maxVolume = 20000;
+
 
 
     //Used to count voice volume from server
@@ -73,8 +75,6 @@ public class ClientService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-
-
         return START_NOT_STICKY;
     }
 
@@ -157,7 +157,7 @@ public class ClientService extends Service {
                     VolumeSO volumeSO = (VolumeSO) object;
                     Log.d("ClientService", "Volume: " + volumeSO.getVolume());
                     volume = volumeSO.getVolume();
-                    if(volume > 20000){
+                    if(volume > maxVolume){
                         setNoiseCounter(getNoiseCounter()+1);
                         Log.d("ClientService", ""+ noiseCounter);
                     }
@@ -250,5 +250,9 @@ public class ClientService extends Service {
         if(msc!=null){
             msc.stop();
         }
+    }
+
+    public void setMaxVolume(int maxVolume) {
+        this.maxVolume = maxVolume;
     }
 }
