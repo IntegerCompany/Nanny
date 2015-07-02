@@ -1,75 +1,29 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.todo.nanny.LauncherActivity">
+    tools:context="com.todo.nanny.LauncherActivity"
+    android:orientation="vertical">
 
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/tv_lelve"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone" />
 
     <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="get amplitude"
-        android:id="@+id/btn_get_amplitude"
-        android:layout_below="@+id/tv_lelve"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/btn_go_client"
+        android:layout_gravity="center"
+        android:background="@drawable/main_moms_button_selector"
         android:layout_centerHorizontal="true"
-        android:visibility="gone" />
+        android:layout_marginTop="25dp" />
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/pb_progress"
-        android:layout_below="@+id/tv_lelve"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:indeterminate="false"
-        android:visibility="gone" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
+    <Button
+        android:layout_width="200dp"
         android:layout_height="200dp"
-        android:id="@+id/container_mom_phone_text"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="15dp"
-        android:elevation="10dp">
+        android:id="@+id/btn_go_server"
+        android:layout_gravity="center"
+        android:background="@drawable/main_baby_button_selector"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp" />
 
-        <Button
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:id="@+id/btn_go_client"
-            android:layout_gravity="center"
-            android:background="@drawable/main_moms_button_selector" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:id="@+id/container_baby_phone_text"
-        android:layout_below="@+id/container_mom_phone_text"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="30dp"
-        android:elevation="10dp">
-
-        <Button
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:id="@+id/btn_go_server"
-            android:layout_gravity="center"
-            android:background="@drawable/main_baby_button_selector" />
-    </FrameLayout>
-
-</RelativeLayout>
+</LinearLayout>
