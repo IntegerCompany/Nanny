@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class ClientActivity extends Activity {
     RelativeLayout containerSleep;
     RelativeLayout containerCry;
     BroadcastReceiver receiver;
+    Chronometer chronometer;
 
     Handler handler;
 
@@ -166,6 +168,7 @@ public class ClientActivity extends Activity {
 
         editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
+        chronometer = (Chronometer) findViewById(R.id.chronometer);
 
         containerSleep = (RelativeLayout) findViewById(R.id.container_sleeping_baby_client);
         containerSleep.setVisibility(View.GONE);
@@ -274,6 +277,10 @@ public class ClientActivity extends Activity {
                     //TODO alert
                 }else if(intent.getAction().equals(getString(R.string.show_sleeping_baby_screen_action))){
                     showSleepingScreen();
+                }else if(intent.getAction().equals(getString(R.string.set_server_start_time_action))){
+                    if (chronometer != null){
+                        chronometer.setBase(intent.getLongExtra("serverStartTime", System.currentTimeMillis()));
+                    }
                 }
             }
         };
@@ -283,6 +290,7 @@ public class ClientActivity extends Activity {
         filter.addAction("com.todo.nanny.wrongIP");
         filter.addAction("com.todo.nanny.reconnectError");
         filter.addAction("com.todo.nanny.hide");
+        filter.addAction("com.todo.nanny.serverStartTime");
 
         registerReceiver(receiver, filter);
     }

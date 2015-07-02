@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.todo.nanny.AppState;
 import com.todo.nanny.ClientActivity;
 
 import com.todo.nanny.audio.MediaStreamClient;
@@ -119,6 +120,8 @@ public class ClientService extends Service {
         client.getKryo().register(SimpleObject.class);
         client.getKryo().register(VolumeSO.class);
         client.getKryo().register(MessageSO.class);
+        client.getKryo().register(Long.class);
+
         new Thread(client).start();
         new Thread(new Runnable() {
             @Override
@@ -169,6 +172,12 @@ public class ClientService extends Service {
                             break;
                     }
                 }
+                if (object instanceof Long){
+                    long serverStartTime = (long) object;
+                    Intent intent = new Intent("com.todo.nanny.serverStartTime");
+                    intent.putExtra("serverStartTime", serverStartTime);
+                    getApplicationContext().sendBroadcast(intent);
+                }
             }
 
             @Override
@@ -179,11 +188,11 @@ public class ClientService extends Service {
                     public void run() {
 
                         if (reconnectionAttempt < 3) {
-                                startDataTransferingClient(ip);
-                                reconnectionAttempt++;
-                                handler.postDelayed(this, RECONNECTION_TIME);
-                                isReconnect = true;
-                            }else{
+                            startDataTransferingClient(ip);
+                            reconnectionAttempt++;
+                            handler.postDelayed(this, RECONNECTION_TIME);
+                            isReconnect = true;
+                        } else {
                             Intent intent = new Intent().setAction("com.todo.nanny.reconnectError");
                             getApplicationContext().sendBroadcast(intent);
                             isReconnect = false;

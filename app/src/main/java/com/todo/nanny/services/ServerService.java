@@ -33,6 +33,7 @@ public class ServerService extends Service {
     private MediaRecorder mRecorder = null;
     Handler handler;
     boolean endHandler = false;
+    long serverStartTime;
 
     public ServerService() {
     }
@@ -90,8 +91,10 @@ public class ServerService extends Service {
             server.getKryo().register(SimpleObject.class);
             server.getKryo().register(VolumeSO.class);
             server.getKryo().register(MessageSO.class);
+            server.getKryo().register(Long.class);
 
             server.start();
+            serverStartTime = System.currentTimeMillis();
             Log.d("ServerService", "Port: " + (PORT + 1));
             server.bind(PORT + 1);
             server.addListener(new Listener() {
@@ -99,6 +102,7 @@ public class ServerService extends Service {
                 public void connected(Connection connection) {
                     super.connected(connection);
                     serverConnection = connection;
+                    serverConnection.sendTCP(serverStartTime);
                     Log.d("ServerService", "Server: Someone connected");
                 }
 
