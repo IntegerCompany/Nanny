@@ -57,7 +57,7 @@
         <ImageButton
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:id="@+id/imageButton"
+            android:id="@+id/ibtn_pause_baby_listening"
             android:layout_centerHorizontal="true"
             android:background="@drawable/pause_with_shadow"
             android:layout_alignParentBottom="false"
@@ -97,7 +97,7 @@
         <ImageButton
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:id="@+id/ibtn_pause_baby_listening"
+            android:id="@+id/ibtn_pause_baby_listening1"
             android:layout_centerHorizontal="true"
             android:background="@drawable/pause_with_shadow"
             android:layout_alignParentBottom="false"
