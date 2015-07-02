@@ -3,7 +3,9 @@ package com.todo.nanny.helperclasses;
 import android.os.Handler;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class EpochTimer{
 
@@ -12,12 +14,15 @@ public class EpochTimer{
         private TextView tvChronometer;
         private boolean running;
         private Date dateToShow;
+        private SimpleDateFormat dateFormat;
 
 
         public EpochTimer(TextView tvChronometer){
             this.tvChronometer = tvChronometer;
             handler = new Handler();
             dateToShow = new Date(System.currentTimeMillis());
+            dateFormat = new SimpleDateFormat("HH:mm:ss");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 
         }
@@ -30,7 +35,7 @@ public class EpochTimer{
                     public void run() {
                         if (running) {
                             dateToShow.setTime(System.currentTimeMillis() - timeStart);
-                            tvChronometer.setText(dateToShow.getHours() + ":" + dateToShow.getMinutes() + ":" + dateToShow.getSeconds());
+                            tvChronometer.setText(dateFormat.format(dateToShow));
 
                             handler.postDelayed(this, 1000);
                         }
