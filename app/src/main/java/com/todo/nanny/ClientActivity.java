@@ -15,6 +15,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -48,6 +49,7 @@ public class ClientActivity extends Activity {
     RelativeLayout containerCry;
     BroadcastReceiver receiver;
     Chronometer chronometer;
+    long timeServerStart = 0;
 
     Handler handler;
 
@@ -169,6 +171,10 @@ public class ClientActivity extends Activity {
         editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
         chronometer = (Chronometer) findViewById(R.id.chronometer);
+        if (timeServerStart != 0){
+            chronometer.setBase(timeServerStart);
+            chronometer.start();
+        }
 
         containerSleep = (RelativeLayout) findViewById(R.id.container_sleeping_baby_client);
         containerSleep.setVisibility(View.GONE);
@@ -279,7 +285,9 @@ public class ClientActivity extends Activity {
                     showSleepingScreen();
                 }else if(intent.getAction().equals(getString(R.string.set_server_start_time_action))){
                     if (chronometer != null){
-                        chronometer.setBase(intent.getLongExtra("serverStartTime", System.currentTimeMillis()));
+                        timeServerStart = intent.getLongExtra("serverStartTime", SystemClock.elapsedRealtime());
+                        chronometer.setBase(timeServerStart);
+                        chronometer.start();
                     }
                 }
             }

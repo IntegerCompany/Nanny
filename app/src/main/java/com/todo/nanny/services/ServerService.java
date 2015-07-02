@@ -6,6 +6,7 @@ import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -94,7 +95,7 @@ public class ServerService extends Service {
             server.getKryo().register(Long.class);
 
             server.start();
-            serverStartTime = System.currentTimeMillis();
+            serverStartTime = SystemClock.elapsedRealtime();
             Log.d("ServerService", "Port: " + (PORT + 1));
             server.bind(PORT + 1);
             server.addListener(new Listener() {
