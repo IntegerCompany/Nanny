@@ -243,4 +243,12 @@ public class ClientService extends Service {
             }
         }
     }
+
+    public void stopDataTransfering(){
+        clientConnection.close();
+        client.stop();
+        if(msc!=null){
+            msc.stop();
+        }
+    }
 }
