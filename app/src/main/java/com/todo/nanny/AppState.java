@@ -12,24 +12,16 @@ public class AppState {
 
     private static final String LOG_STATUS = "LogStatus" ;
 
-
-
     private static Context mContext;
     private static SharedPreferences sPrefLog;
-
-
-
 
     public static void setupAppState(Context context){
         mContext = context;
         sPrefLog = context.getSharedPreferences("nanny", Context.MODE_PRIVATE);
-
-
-
     }
 
     public static boolean isIntroShowing(){
-        return (sPrefLog.getBoolean("firstrun", true));
+        return sPrefLog.getBoolean("firstrun", true);
     }
 
     public static void introHasBeenShown(){
@@ -42,5 +34,13 @@ public class AppState {
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         return mWifi.isConnected();
+    }
+
+    public static void setIpIntoMemory(String ip){
+        sPrefLog.edit().putString("ip_address",ip).apply();
+    }
+
+    public static String getLastIpFromMemory(){
+        return sPrefLog.getString("ip_address","");
     }
 }

@@ -68,8 +68,6 @@ public class ClientActivity extends Activity {
 
     Handler handler;
 
-    public int currentVolume;
-
     Button btnHelp;
 
 
@@ -84,8 +82,6 @@ public class ClientActivity extends Activity {
         // initialize layout variables
         initViewsById();
         startSignalListener();
-
-
 
         bindMyService();
 
@@ -111,6 +107,12 @@ public class ClientActivity extends Activity {
 
         }
         isAlarm = false;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AppState.setIpIntoMemory(editText1.getText().toString());
     }
 
     @Override
@@ -234,7 +236,16 @@ public class ClientActivity extends Activity {
         });
 
         editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
+        editText1.setText(AppState.getLastIpFromMemory());
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
+        ibtnStart.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bindService(intent, sConn, BIND_AUTO_CREATE);
+                ip = editText1.getText().toString();
+                AppState.setIpIntoMemory(ip);
+            }
+        });
         epochTimer = new EpochTimer((TextView) findViewById(R.id.tvChronometer));
         epochTimer.start();
         if (timeServerStart != 0){
@@ -246,15 +257,6 @@ public class ClientActivity extends Activity {
         containerSleep.setVisibility(View.GONE);
         containerCry = (RelativeLayout) findViewById(R.id.container_crying_baby_client);
         containerCry.setVisibility(View.GONE);
-
-        ibtnStart.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bindService(intent, sConn, BIND_AUTO_CREATE);
-                ip = editText1.getText().toString();
-
-            }
-        });
 
         oclStart = new OnClickListener() {
             @Override
