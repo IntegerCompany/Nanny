@@ -22,7 +22,7 @@ public class AppState {
 
     public static void setupAppState(Context context){
         mContext = context;
-        sPrefLog = context.getSharedPreferences("egocentrum", Context.MODE_PRIVATE);
+        sPrefLog = context.getSharedPreferences("nanny", Context.MODE_PRIVATE);
 
 
 
@@ -31,7 +31,6 @@ public class AppState {
     public static boolean isIntroShowing(){
 
         if (sPrefLog.getBoolean("firstrun", true)) {
-
             sPrefLog.edit().putBoolean("firstrun", false).apply();
             return true;
         }

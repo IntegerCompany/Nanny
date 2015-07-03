@@ -15,4 +15,5 @@
     <string name="connection_error">com.todo.nanny.reconnectError</string>
     <string name="show_sleeping_baby_screen_action">com.todo.nanny.hide</string>
     <string name="set_server_start_time_action">com.todo.nanny.serverStartTime</string>
+    <string name="testing_voice_action">com.todo.nanny.testing.voice</string>
 </resources>

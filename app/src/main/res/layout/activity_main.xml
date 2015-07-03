@@ -139,4 +139,11 @@
 
     </RelativeLayout>
 
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/btn_client_help"
+        android:background="@drawable/abc_btn_rating_star_off_mtrl_alpha" />
+
 </RelativeLayout>

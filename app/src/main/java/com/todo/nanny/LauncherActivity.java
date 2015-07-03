@@ -6,10 +6,13 @@ import android.graphics.Color;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.todo.nanny.helperclasses.VoiceTestDialog;
 
 import java.io.IOException;
 
@@ -23,7 +26,7 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_launcher);
 
         AppState.setupAppState(this);
-  // TODO modify introActivity
+        // TODO modify introActivity
         isIntroMode();
 
         Button server = (Button) findViewById(R.id.btn_go_server);
@@ -36,23 +39,26 @@ public class LauncherActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btn_go_server:
-                startActivity(new Intent(getApplication(),ServerActivity.class));
+
+                startActivity(new Intent(getApplication(), ServerActivity.class));
+
                 finish();
-
                 break;
+
             case R.id.btn_go_client:
-                startActivity(new Intent(getApplication(),ClientActivity.class));
 
+                startActivity(new Intent(getApplication(), ClientActivity.class));
 
+                finish();
                 break;
         }
     }
 
-    private void isIntroMode(){
-        if(AppState.isIntroShowing()){
-            startActivity(new Intent(this,IntroActivity.class));
+    private void isIntroMode() {
+        if (AppState.isIntroShowing()) {
+            startActivity(new Intent(this, IntroActivity.class));
             this.finish();
         }
 

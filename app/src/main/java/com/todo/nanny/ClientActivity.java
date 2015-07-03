@@ -24,6 +24,7 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.todo.nanny.helperclasses.EpochTimer;
+import com.todo.nanny.helperclasses.VoiceTestDialog;
 import com.todo.nanny.services.ClientService;
 
 public class ClientActivity extends Activity {
@@ -66,6 +68,9 @@ public class ClientActivity extends Activity {
 
     Handler handler;
 
+    public int currentVolume;
+
+    Button btnHelp;
 
 
     /** Called when the activity is first created. */
@@ -111,11 +116,20 @@ public class ClientActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(receiver);
-        clientService.stopDataTransfering();
-        clientService.setIsLoudMessageSent(false);
-        unbindService(sConn);
-        stopService(intent);
+
+
+        if(clientService != null){
+            clientService.stopDataTransfering();
+            clientService.setIsLoudMessageSent(false);
+        }
+        try{
+            unregisterReceiver(receiver);
+            unbindService(sConn);
+            stopService(intent);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private int getWifiSignal(){
@@ -182,6 +196,16 @@ public class ClientActivity extends Activity {
         clientService.setNoiseCounter(0);
     }
     private void initViewsById(){
+
+        btnHelp = (Button) findViewById(R.id.btn_client_help);
+        btnHelp.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ClientActivity.this, IntroActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
 
         tvVolume = (TextView) findViewById(R.id.tv_volume);
 
@@ -374,6 +398,7 @@ public class ClientActivity extends Activity {
         filter.addAction("com.todo.nanny.reconnectError");
         filter.addAction("com.todo.nanny.hide");
         filter.addAction("com.todo.nanny.serverStartTime");
+
 
         registerReceiver(receiver, filter);
     }
