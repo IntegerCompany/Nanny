@@ -91,8 +91,7 @@ public class ClientActivity extends Activity {
     protected void onStart() {
         super.onStart();
         if (!isAlarm) {
-            startService(intent);
-            bindService(intent, sConn, 0);
+
         }
 
     }
@@ -114,7 +113,9 @@ public class ClientActivity extends Activity {
         super.onDestroy();
         unregisterReceiver(receiver);
         clientService.stopDataTransfering();
+        clientService.setIsLoudMessageSent(false);
         unbindService(sConn);
+        stopService(intent);
     }
 
     private int getWifiSignal(){
@@ -225,10 +226,9 @@ public class ClientActivity extends Activity {
         ibtnStart.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                bindService(intent, sConn, BIND_AUTO_CREATE);
                 ip = editText1.getText().toString();
-                intent.putExtra("ip", ip);
-                clientService.startClient(ip);
-                Log.d("ClientActivity","Fucking start");
+
             }
         });
 
@@ -311,6 +311,9 @@ public class ClientActivity extends Activity {
                 Log.d(LOG_TAG, "MainActivity onServiceConnected");
                 clientService = ((ClientService.MyBinder) binder).getService();
                 bound = true;
+                intent.putExtra("ip", ip);
+                clientService.startClient(ip);
+                clientService.setIsLoudMessageSent(false);
             }
 
             public void onServiceDisconnected(ComponentName name) {
