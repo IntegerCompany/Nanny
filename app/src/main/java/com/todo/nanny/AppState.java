@@ -29,13 +29,12 @@ public class AppState {
     }
 
     public static boolean isIntroShowing(){
+        return (sPrefLog.getBoolean("firstrun", true));
+    }
 
-        if (sPrefLog.getBoolean("firstrun", true)) {
-            sPrefLog.edit().putBoolean("firstrun", false).apply();
-            return true;
-        }
+    public static void introHasBeenShown(){
 
-        return false;
+        sPrefLog.edit().putBoolean("firstrun", false).apply();
     }
 
     public static boolean isWifiConnected(){

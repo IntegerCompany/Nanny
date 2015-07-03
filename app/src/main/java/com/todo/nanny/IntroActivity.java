@@ -27,7 +27,7 @@ public class IntroActivity extends AppIntro {
         showSkipButton(true);
 
         // Turn vibration on and set intensity
-        // NOTE: you will probably need to ask VIBRATE permesssion in Manifest
+        // NOTE: you will probably need to ask VIBRATE permission in Manifest
         setVibrate(true);
         setVibrateIntensity(30);
     }
@@ -37,6 +37,7 @@ public class IntroActivity extends AppIntro {
         //temp intent
         if(AppState.isIntroShowing()) {
             startActivity(new Intent(this, LauncherActivity.class));
+            AppState.introHasBeenShown();
         }
         finish();
     }
@@ -46,6 +47,7 @@ public class IntroActivity extends AppIntro {
        // temp intent
         if(AppState.isIntroShowing()) {
             startActivity(new Intent(this, LauncherActivity.class));
+            AppState.introHasBeenShown();
         }
         finish();
     }
