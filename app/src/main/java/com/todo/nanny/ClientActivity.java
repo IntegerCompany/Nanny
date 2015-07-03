@@ -169,7 +169,7 @@ public class ClientActivity extends Activity {
     private void pauseListeningMyBaby(){
         clientService.setIsLoudMessageSent(true);
         pauseBabyListening.setOnClickListener(oclStop);
-        pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.start_with_shadow));
+        pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.unmute_with_shadow));
     }
 
     /**
@@ -178,7 +178,7 @@ public class ClientActivity extends Activity {
     private void resumeListeningMyBaby(){
         clientService.setIsLoudMessageSent(false);
         pauseBabyListening.setOnClickListener(oclStart);
-        pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.pause_with_shadow));
+        pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.mute_with_shadow));
         clientService.setNoiseCounter(0);
     }
     private void initViewsById(){
