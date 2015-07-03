@@ -65,8 +65,6 @@ public class ServerService extends Service {
         startObjectTransferingServer();
         start();
 
-
-
         handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
@@ -161,6 +159,7 @@ public class ServerService extends Service {
                     super.disconnected(connection);
                     serverConnection = connection;
                     isVoiceTransfer = false;
+                    isRecorderBroken = true;
                     Log.d("ServerService", "Server: Client disconnected");
                 }
             });
@@ -224,6 +223,21 @@ public class ServerService extends Service {
             }
         }
 
+    public void firstStart(){
+        if (mRecorder != null) {
+            try {
+                mRecorder.stop();
+                mRecorder.reset();
+                mRecorder.release();
+                mRecorder = null;
+                Log.d("ServerService", "Stopped");
+            } catch (IllegalStateException e) {
+                Log.d("ServerService", "Can't stop");
+
+            }
+        }
+    }
+
 
 
     public void stop() {
@@ -257,6 +271,7 @@ public class ServerService extends Service {
 
 
     public void killAll(){
+        isVoiceTransfer = true;
         if(mss!=null){
             mss.stop();
         }
@@ -265,6 +280,7 @@ public class ServerService extends Service {
         }
         endHandler = true;
         stop();
+        stopSelf();
     }
 
 }

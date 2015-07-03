@@ -87,6 +87,7 @@ public class ServerActivity extends Activity {
                     ip = textView1.getText().toString();
 
                     textView1.append("Starting server\n");
+                    serverService.firstStart();
                     serverService.startServer();
                 } else if (button1.getTitle().equals("Stop")) {
                     button1.setTitle("Start");
@@ -130,7 +131,7 @@ public class ServerActivity extends Activity {
                 bound = false;
             }
         };
-        bindService(new Intent(this, ServerService.class),serviceConnection , BIND_AUTO_CREATE);
+        bindService(new Intent(this, ServerService.class), serviceConnection , BIND_AUTO_CREATE);
         checkAndHandleWifiState();
     }
 
@@ -180,6 +181,7 @@ public class ServerActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(receiver);
+        serverService.stop();
         serverService.killAll();
         unbindService(serviceConnection);
     }
