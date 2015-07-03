@@ -31,6 +31,7 @@ public class SplashScreen extends Activity{
         setContentView(R.layout.activity_splash_screen);
 
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.splash_contaniner_cancel);
+
         frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
