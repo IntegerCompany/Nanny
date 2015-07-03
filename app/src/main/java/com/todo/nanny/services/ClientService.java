@@ -170,13 +170,13 @@ public class ClientService extends Service {
                 }
                 if (object instanceof MessageSO) {
                     MessageSO messageSO = (MessageSO) object;
-                    switch (messageSO.getCode()){
+                    switch (messageSO.getCode()) {
                         case MessageSO.READY_FOR_RECEIVING_VOICE:
                             startVoiceReceiving();
                             break;
                     }
                 }
-                if (object instanceof Long){
+                if (object instanceof Long) {
                     long serverStartTime = (long) object;
                     Intent intent = new Intent("com.todo.nanny.serverStartTime");
                     intent.putExtra("serverStartTime", serverStartTime);

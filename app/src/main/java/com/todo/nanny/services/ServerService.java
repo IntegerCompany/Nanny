@@ -68,6 +68,7 @@ public class ServerService extends Service {
         handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
+
                 if (!endHandler) {
                     if(aml == 0){
                         counter ++;
@@ -86,6 +87,9 @@ public class ServerService extends Service {
                     if (aml > 100) {
                         sendAlarm(aml);
                     }
+                    Intent intent = new Intent("com.todo.nanny.testing.voice");
+                    intent.putExtra("volume", aml);
+                    getApplicationContext().sendBroadcast(intent);
                     Log.d("ServerService", "" + aml);
                     handler.postDelayed(this, 1000);
                 }

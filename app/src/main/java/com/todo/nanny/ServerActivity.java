@@ -23,6 +23,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.todo.nanny.helperclasses.VoiceTestDialog;
+import com.todo.nanny.helperclasses.VolumeReceiver;
 import com.todo.nanny.services.ServerService;
 
 public class ServerActivity extends Activity {
@@ -30,7 +32,7 @@ public class ServerActivity extends Activity {
 
     TextView textView1;
     String ip;
-    BroadcastReceiver receiver;
+
     ServiceConnection serviceConnection;
 
 
@@ -42,6 +44,11 @@ public class ServerActivity extends Activity {
     View start_view, new_view;
     Button btnCheckWifiSettings;
 
+    BroadcastReceiver receiver;
+    VoiceTestDialog voiceTestDialog;
+
+    Button btnTestVolume,btnHelp;
+
 
     /**
      * Called when the activity is first created.
@@ -50,7 +57,11 @@ public class ServerActivity extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
+
+
         LayoutInflater inflater = getLayoutInflater();
+
+         voiceTestDialog = new VoiceTestDialog(this);
 
 
         start_view = inflater.inflate(R.layout.server_show_id, null);
@@ -89,12 +100,24 @@ public class ServerActivity extends Activity {
                     textView1.append("Starting server\n");
                     serverService.firstStart();
                     serverService.startServer();
+
+
                 } else if (button1.getTitle().equals("Stop")) {
                     button1.setTitle("Start");
                     serverService.stopWorking();
                 }
             }
 
+        });
+
+        btnHelp = (Button) findViewById(R.id.btn_server_help);
+        btnHelp.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ServerActivity.this, IntroActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
         });
 
         receiver = new BroadcastReceiver() {
@@ -105,12 +128,16 @@ public class ServerActivity extends Activity {
                 }
                 if (intent.getAction().equals("android.net.wifi.STATE_CHANGE")){
                     checkAndHandleWifiState();
+                }else if(intent.getAction().equals(context.getString(R.string.testing_voice_action))) {
+                    VolumeReceiver volumeReceiver = voiceTestDialog;
+                    volumeReceiver.onReceiveVolumeLevel(intent.getIntExtra("volume", 0));
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction("tw.rascov.MediaStreamer.ERROR");
         filter.addAction("android.net.wifi.STATE_CHANGE");
+        filter.addAction(getApplicationContext().getString(R.string.testing_voice_action));
         registerReceiver(receiver, filter);
         checkAndHandleWifiState();
     }
@@ -131,8 +158,11 @@ public class ServerActivity extends Activity {
                 bound = false;
             }
         };
-        bindService(new Intent(this, ServerService.class), serviceConnection , BIND_AUTO_CREATE);
+        bindService(new Intent(this, ServerService.class), serviceConnection, BIND_AUTO_CREATE);
         checkAndHandleWifiState();
+
+
+
     }
 
     public void addView(View newView) {
@@ -159,6 +189,17 @@ public class ServerActivity extends Activity {
             }
         });
         Log.i("Replacing", " View");
+
+        btnTestVolume = (Button) findViewById(R.id.btn_test_volume);
+        btnTestVolume.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                voiceTestDialog.setCanceledOnTouchOutside(false);
+                voiceTestDialog.show();
+            }
+        });
+
+
     }
 
     public ViewGroup getMyParentView() {
@@ -210,7 +251,6 @@ public class ServerActivity extends Activity {
             }
         }
     }
-
 
 
 }
