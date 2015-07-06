@@ -23,9 +23,6 @@ public class AppState {
     public static void setupAppState(Context context){
         mContext = context;
         sPrefLog = context.getSharedPreferences("nanny", Context.MODE_PRIVATE);
-
-
-
     }
 
     public static boolean isIntroShowing(){
@@ -36,6 +33,22 @@ public class AppState {
         }
 
         return false;
+    }
+
+    public static void setSeekBarProgress(int progress){
+        sPrefLog.edit().putInt("progress", progress).apply();
+    }
+
+    public static int getSeekBarProgress(){
+        return sPrefLog.getInt("progress", 1500);
+    }
+
+    public static void setIP(String ip){
+        sPrefLog.edit().putString("ip", ip).apply();
+    }
+
+    public static String getIP(){
+        return sPrefLog.getString("ip", "");
     }
 
     public static boolean isWifiConnected(){

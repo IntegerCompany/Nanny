@@ -37,9 +37,11 @@ public class ServerService extends Service {
     boolean endHandler = false;
     boolean isRecorderBroken = false;
     boolean isVoiceTransfer = false;
+    boolean isFirstConnect = true;
     int aml;
     int counter;
     long serverStartTime;
+
 
     public ServerService() {
     }
@@ -92,6 +94,10 @@ public class ServerService extends Service {
                     getApplicationContext().sendBroadcast(intent);
                     Log.d("ServerService", "" + aml);
                     handler.postDelayed(this, 1000);
+
+                    if(serverConnection != null && !serverConnection.isConnected() && !isFirstConnect){
+                        disconnected();
+                    }
                 }
             }
         };
@@ -116,6 +122,7 @@ public class ServerService extends Service {
                 @Override
                 public void connected(Connection connection) {
                     super.connected(connection);
+                    isFirstConnect = false;
                     serverConnection = connection;
                     serverConnection.sendTCP(serverStartTime);
                     Log.d("ServerService", "Server: Someone connected, sending server start time: " + serverStartTime);
@@ -162,9 +169,7 @@ public class ServerService extends Service {
                 public void disconnected(Connection connection) {
                     super.disconnected(connection);
                     serverConnection = connection;
-                    isVoiceTransfer = false;
-                    isRecorderBroken = true;
-                    Log.d("ServerService", "Server: Client disconnected");
+
                 }
             });
 
@@ -285,6 +290,12 @@ public class ServerService extends Service {
         endHandler = true;
         stop();
         stopSelf();
+    }
+
+    public void disconnected(){
+        isFirstConnect = true;
+        stopWorking();
+        Log.d("ServerService", "Server: Client disconnected");
     }
 
 }

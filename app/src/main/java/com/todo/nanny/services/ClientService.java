@@ -28,13 +28,14 @@ import java.io.IOException;
 public class ClientService extends Service {
     final String TAG = "ClientService";
     Client client;
-    Connection clientConnection;
+    public Connection clientConnection;
     boolean isLoudMessageSent, isReconnect, isExit = false;
     String ip;
 
     Handler handler;
-    private static final int RECONNECTION_TIME = 10000;
+    private static final int RECONNECTION_TIME = 3000;
     int reconnectionAttempt = 0;
+    boolean isFirstConnect = true;
 
     int maxVolume = 20000;
 
@@ -89,12 +90,37 @@ public class ClientService extends Service {
         Log.d(TAG, "onDestroy");
     }
 
-    public void startClient(String ip) {
+    public void startClient(final String ip) {
         this.ip = ip;
         Log.d(TAG, "startClient");
         Log.d(TAG, String.valueOf(ServerService.PORT));
         Log.d(TAG, ip);
         startDataTransferingClient(ip);
+
+        handler.post(new Runnable() {
+            public void run() {
+
+                if (clientConnection != null && !clientConnection.isConnected() && !isFirstConnect) {
+                    if (!isExit) {
+                        if (reconnectionAttempt < 20) {
+                            startDataTransferingClient(ip);
+                            reconnectionAttempt++;
+                            isReconnect = true;
+                            Log.d("ClientService", "Reconnection attempt" + reconnectionAttempt);
+                        } else {
+                            Intent intent = new Intent().setAction("com.todo.nanny.reconnectError");
+                            getApplicationContext().sendBroadcast(intent);
+                            isReconnect = false;
+                            Log.d("ClientService", "Cant Connect to server!!!");
+                            stopSelf();
+                            isFirstConnect = true;
+                        }
+                    }
+                }
+                handler.postDelayed(this, RECONNECTION_TIME);
+            }
+        });
+
     }
 
     public void stopClient() {
@@ -148,6 +174,8 @@ public class ClientService extends Service {
             public void connected(Connection connection) {
                 super.connected(connection);
                 clientConnection = connection;
+                isFirstConnect = false;
+                isLoudMessageSent = false;
                 Intent intent = new Intent().setAction("com.todo.nanny.hide");
                 getApplicationContext().sendBroadcast(intent);
                 Log.d("ClientService", "Client: connected to server");
@@ -158,13 +186,13 @@ public class ClientService extends Service {
                 super.received(connection, object);
                 clientConnection = connection;
                 Log.d("ClientService", "Client: we have this object from server " + object.getClass().getName());
-                if(object instanceof VolumeSO){
+                if (object instanceof VolumeSO) {
                     VolumeSO volumeSO = (VolumeSO) object;
                     Log.d("ClientService", "Volume: " + volumeSO.getVolume());
                     volume = volumeSO.getVolume();
-                    if(volume > maxVolume){
-                        setNoiseCounter(getNoiseCounter()+1);
-                        Log.d("ClientService", ""+ noiseCounter);
+                    if (volume > maxVolume) {
+                        setNoiseCounter(getNoiseCounter() + 1);
+                        Log.d("ClientService", "" + noiseCounter);
                     }
 
                 }
@@ -190,25 +218,7 @@ public class ClientService extends Service {
                 super.disconnected(connection);
                 clientConnection = connection;
 
-                handler.post(new Runnable() {
-                    public void run() {
-                        if (!isExit) {
-                            if (reconnectionAttempt < 3) {
-                                startDataTransferingClient(ip);
-                                reconnectionAttempt++;
-                                handler.postDelayed(this, RECONNECTION_TIME);
-                                isReconnect = true;
-                            } else {
-                                Intent intent = new Intent().setAction("com.todo.nanny.reconnectError");
-                                getApplicationContext().sendBroadcast(intent);
-                                isReconnect = false;
-                                Log.d("ClientService", "Cant Connect to server!!!");
-                                stopSelf();
-                            }
-                        }
 
-                    }
-                });
                 Log.d("ClientService", "Client: we disconnected from server");
             }
         });
@@ -256,8 +266,12 @@ public class ClientService extends Service {
     }
 
     public void stopDataTransfering(){
-        clientConnection.close();
-        client.stop();
+        if(clientConnection != null){
+            clientConnection.close();
+        }
+        if(client != null){
+            client.stop();
+        }
         if (msc != null) {
             msc.stop();
         }

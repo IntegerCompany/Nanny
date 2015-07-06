@@ -160,6 +160,7 @@ public class ClientActivity extends Activity {
         editText1.setVisibility(View.GONE);
         ibtnStart.setVisibility(View.GONE);
         containerCry.setVisibility(View.GONE);
+        AppState.setIP(ip);
     }
     private void confirmVoiceTransfer(){
         clientService.letMeHearBaby();
@@ -210,22 +211,23 @@ public class ClientActivity extends Activity {
         tvVolume = (TextView) findViewById(R.id.tv_volume);
 
         sbVolume = (SeekBar) findViewById(R.id.sb_volume);
+        //todo set max 3000
         sbVolume.setMax(40000);
-        sbVolume.setProgress(20000);
+        sbVolume.setProgress(AppState.getSeekBarProgress());
+
 
         tvVolume.setText("" + sbVolume.getProgress());
 
         sbVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar arg0) {
-                float vol = (float) (arg0.getProgress()) / (float) (arg0.getMax());
+                AppState.setSeekBarProgress(sbVolume.getProgress());
             }
 
             @Override
             public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
                 tvVolume.setText("" + arg1);
                 clientService.setMaxVolume(arg1);
-
             }
 
             @Override
@@ -234,6 +236,7 @@ public class ClientActivity extends Activity {
         });
 
         editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
+        editText1.setText(AppState.getIP());
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
         epochTimer = new EpochTimer((TextView) findViewById(R.id.tvChronometer));
         epochTimer.start();
@@ -252,7 +255,10 @@ public class ClientActivity extends Activity {
             public void onClick(View view) {
                 bindService(intent, sConn, BIND_AUTO_CREATE);
                 ip = editText1.getText().toString();
-
+                if(clientService!= null){
+                    if(clientService.clientConnection == null)
+                    clientService.startClient(ip);
+                }
             }
         });
 
@@ -379,6 +385,7 @@ public class ClientActivity extends Activity {
                 }else if(intent.getAction().equals(getString(R.string.connection_error))){
                     //button1.setText("Start");
                     //TODO alert
+                    Toast.makeText(getApplicationContext(),"Fail" , Toast.LENGTH_SHORT);
 
                 }else if(intent.getAction().equals(getString(R.string.show_sleeping_baby_screen_action))){
                     showSleepingScreen();
