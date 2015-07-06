@@ -62,6 +62,7 @@ public class ClientActivity extends Activity {
     BroadcastReceiver receiver;
     EpochTimer epochTimer;
     long timeServerStart = 0;
+    Vibrator v;
 
     OnClickListener oclStop;
     OnClickListener oclStart;
@@ -250,9 +251,9 @@ public class ClientActivity extends Activity {
             public void onClick(View view) {
                 bindService(intent, sConn, BIND_AUTO_CREATE);
                 ip = editText1.getText().toString();
-                if(clientService!= null){
-                    if(clientService.clientConnection == null)
-                    clientService.startClient(ip);
+                if (clientService != null) {
+                    if (clientService.clientConnection == null)
+                        clientService.startClient(ip);
                 }
             }
         });
@@ -264,9 +265,15 @@ public class ClientActivity extends Activity {
                 switch (view.getId()){
                     case R.id.ibtn_pause_baby_listening:
                         pauseListeningMyBaby();
+                        if (v != null){
+                            v.cancel();
+                        }
                         break;
                     case R.id.ibtn_confirm_voice_transfer:
                         confirmVoiceTransfer();
+                        if (v != null){
+                            v.cancel();
+                        }
                         break;
                 }
             }
@@ -418,15 +425,15 @@ public class ClientActivity extends Activity {
                 | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
         wakeLock.acquire();
 
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         // Start without a delay
         // Vibrate for 100 milliseconds
         // Sleep for 50 milliseconds
-        long[] pattern = {0, 500, 100, 500, 100};
+        long[] pattern = {0, 1000, 200};
 
         //-1 - vibrate 1 time
-        v.vibrate(pattern, -1);
+        v.vibrate(pattern, 1);
     }
 
     private void playAlertSound(){
