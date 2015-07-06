@@ -102,7 +102,7 @@ public class ClientService extends Service {
 
                 if (clientConnection != null && !clientConnection.isConnected() && !isFirstConnect) {
                     if (!isExit) {
-                        if (reconnectionAttempt < 20) {
+                        if (reconnectionAttempt < 10) {
                             startDataTransferingClient(ip);
                             reconnectionAttempt++;
                             isReconnect = true;
@@ -217,8 +217,6 @@ public class ClientService extends Service {
             public void disconnected(Connection connection) {
                 super.disconnected(connection);
                 clientConnection = connection;
-
-
                 Log.d("ClientService", "Client: we disconnected from server");
             }
         });

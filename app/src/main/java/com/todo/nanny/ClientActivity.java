@@ -1,10 +1,12 @@
 package com.todo.nanny;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -75,8 +77,12 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     Button btnHelp;
     private boolean doubleBackToExitPressedOnce;
 
+    AlertDialog alertDialog;
 
-    /** Called when the activity is first created. */
+
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +112,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     @Override
     protected void onResume() {
         super.onResume();
-        if(isAlarm) {
+        if (isAlarm) {
 
             initCryBabyViews();
             showAlarmScreen();
@@ -120,21 +126,21 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         super.onDestroy();
 
 
-        if(clientService != null){
+        if (clientService != null) {
             clientService.stopDataTransfering();
             clientService.setIsLoudMessageSent(false);
         }
-        try{
+        try {
             unregisterReceiver(receiver);
             unbindService(sConn);
             stopService(intent);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private int getWifiSignal(){
+    private int getWifiSignal() {
 
         WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -146,7 +152,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     public void onBackPressed() {
         Log.d("ServerActivity", "onBackPressed");
         if (doubleBackToExitPressedOnce) {
-            Intent intent = new Intent(getApplication(),LauncherActivity.class);
+            Intent intent = new Intent(getApplication(), LauncherActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
@@ -169,7 +175,8 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         containerCry.setVisibility(View.VISIBLE);
 
     }
-    private void showSleepingScreen(){
+
+    private void showSleepingScreen() {
         //todo temp action
         containerSleep.setVisibility(View.VISIBLE);
         editText1.setVisibility(View.GONE);
@@ -177,14 +184,15 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         containerCry.setVisibility(View.GONE);
         AppState.setIP(ip);
     }
-    private void confirmVoiceTransfer(){
+
+    private void confirmVoiceTransfer() {
         clientService.letMeHearBaby();
         clientService.setNoiseCounter(0);
         confirmVoiceTransfer.setOnClickListener(oclStop);
         confirmVoiceTransfer.setBackground(getResources().getDrawable(R.drawable.ear_with_shadow_green));
     }
 
-    private void stopVoiceTransfer(){
+    private void stopVoiceTransfer() {
         clientService.stopClient();
         clientService.setIsLoudMessageSent(false);
         confirmVoiceTransfer.setOnClickListener(oclStart);
@@ -194,9 +202,9 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     }
 
     /**
-     *  on pause listening
+     * on pause listening
      */
-    private void pauseListeningMyBaby(){
+    private void pauseListeningMyBaby() {
         clientService.setIsLoudMessageSent(true);
         pauseBabyListening.setOnClickListener(oclStop);
         pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.unmute_with_shadow));
@@ -205,13 +213,14 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     /**
      * on resume listening
      */
-    private void resumeListeningMyBaby(){
+    private void resumeListeningMyBaby() {
         clientService.setIsLoudMessageSent(false);
         pauseBabyListening.setOnClickListener(oclStart);
         pauseBabyListening.setBackground(getResources().getDrawable(R.drawable.mute_with_shadow));
         clientService.setNoiseCounter(0);
     }
-    private void initViewsById(){
+
+    private void initViewsById() {
 
         btnHelp = (Button) findViewById(R.id.btn_client_help);
         btnHelp.setOnClickListener(new OnClickListener() {
@@ -254,7 +263,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
         epochTimer = new EpochTimer((TextView) findViewById(R.id.tvChronometer));
         epochTimer.start();
-        if (timeServerStart != 0){
+        if (timeServerStart != 0) {
             epochTimer.setTimeStart(timeServerStart);
             epochTimer.start();
         }
@@ -280,22 +289,22 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onClick(View view) {
 
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.ibtn_pause_baby_listening:
                         pauseListeningMyBaby();
-                        if (v != null){
+                        if (v != null) {
                             v.cancel();
                         }
-                        if(mp != null){
+                        if (mp != null) {
                             mp.stop();
                         }
                         break;
                     case R.id.ibtn_confirm_voice_transfer:
                         confirmVoiceTransfer();
-                        if (v != null){
+                        if (v != null) {
                             v.cancel();
                         }
-                        if(mp != null){
+                        if (mp != null) {
                             mp.stop();
                         }
                         break;
@@ -307,7 +316,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onClick(View view) {
 
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.ibtn_pause_baby_listening:
                         resumeListeningMyBaby();
                         break;
@@ -321,12 +330,14 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         pauseBabyListening = (ImageButton) findViewById(R.id.ibtn_pause_baby_listening);
         pauseBabyListening.setOnClickListener(oclStart);
     }
-    private void wakeUpActivityAction(){
-        Intent intent = new Intent(getApplication(),ClientActivity.class);
+
+    private void wakeUpActivityAction() {
+        Intent intent = new Intent(getApplication(), ClientActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
-    private void startSignalListener(){
+
+    private void startSignalListener() {
         handler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -340,7 +351,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         });
     }
 
-    private void initCryBabyViews(){
+    private void initCryBabyViews() {
 
         confirmVoiceTransfer = (ImageButton) findViewById(R.id.ibtn_confirm_voice_transfer);
         confirmVoiceTransfer.setOnClickListener(oclStart);
@@ -352,9 +363,9 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
                 showSleepingScreen();
                 clientService.setNoiseCounter(0);
                 clientService.setIsLoudMessageSent(false);
-                if(mp != null){
-                    mp.stop(); 
-                }                
+                if (mp != null) {
+                    mp.stop();
+                }
                 if (v != null) {
                     v.cancel();
                 }
@@ -363,9 +374,9 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
 
     }
 
-    private void bindMyService(){
+    private void bindMyService() {
 
-        intent = new Intent(this,ClientService.class);
+        intent = new Intent(this, ClientService.class);
 
 
         sConn = new ServiceConnection() {
@@ -385,14 +396,14 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         };
     }
 
-    private void registerMyReceiver(){
+    private void registerMyReceiver() {
 
         receiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
                 Log.d("ClientActivity", "OnReceive: " + intent.getAction());
-                if(intent.getAction().equals(getString(R.string.error_action))) {
+                if (intent.getAction().equals(getString(R.string.error_action))) {
                     //button1.setText("Start");
-                }else if(intent.getAction().equals(getString(R.string.alarm_action))){
+                } else if (intent.getAction().equals(getString(R.string.alarm_action))) {
 
                     vibrateAndSound();
                     playAlertSound();
@@ -400,29 +411,32 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
                     wakeUpActivityAction();
 
 
-                }else if(intent.getAction().equals(getString(R.string.wrong_ip_action))){
+                } else if (intent.getAction().equals(getString(R.string.wrong_ip_action))) {
 
                     ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
                     if (mWifi.isConnected()) {
                         Toast.makeText(getApplicationContext(), "Cant connect to this ip, check it!", Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         Toast.makeText(getApplicationContext(), "Check your wifi connection!", Toast.LENGTH_SHORT).show();
 
                     }
 
-                    //button1.setText("Start");
                     Log.d("ClientActivity", "another attempt to edit ip");
-                }else if(intent.getAction().equals(getString(R.string.connection_error))){
-                    //button1.setText("Start");
-                    //TODO alert
-                    Toast.makeText(getApplicationContext(),"Fail" , Toast.LENGTH_SHORT);
+                } else if (intent.getAction().equals(getString(R.string.connection_error))) {
+                    unlockScreen();
+                    v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(new long[]{0,1000,200,1000,200,1000,200,1000,200,1000},-1);
+                    wakeUpActivityAction();
+                    showAlertDialog();
 
-                }else if(intent.getAction().equals(getString(R.string.show_sleeping_baby_screen_action))){
+
+
+                } else if (intent.getAction().equals(getString(R.string.show_sleeping_baby_screen_action))) {
                     showSleepingScreen();
-                }else if(intent.getAction().equals(getString(R.string.set_server_start_time_action))){
-                    if (epochTimer != null){
+                } else if (intent.getAction().equals(getString(R.string.set_server_start_time_action))) {
+                    if (epochTimer != null) {
                         timeServerStart = intent.getLongExtra("serverStartTime", System.currentTimeMillis());
                         epochTimer.setTimeStart(timeServerStart);
                         epochTimer.start();
@@ -443,17 +457,8 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     }
 
 
-    private void vibrateAndSound(){
-        KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
-        kl.disableKeyguard();
-
-        PowerManager pm = (PowerManager)
-                getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
-                | PowerManager.ACQUIRE_CAUSES_WAKEUP
-                | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
-        wakeLock.acquire();
+    private void vibrateAndSound() {
+        unlockScreen();
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         mp = MediaPlayer.create(this, AppState.getCurrentSound());
@@ -463,15 +468,15 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         // Start without a delay
         // Vibrate for 100 milliseconds
         // Sleep for 50 milliseconds
-        long[] pattern = {0, 1000, 200,1000, 200,1000, 200,1000,
-                200,1000, 200,1000, 200,1000, 200,1000, 200,1000,
-                200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000};
+        long[] pattern = {0, 1000, 200, 1000, 200, 1000, 200, 1000,
+                200, 1000, 200, 1000, 200, 1000, 200, 1000, 200, 1000,
+                200, 1000, 200, 1000, 200, 1000, 200, 1000, 200, 1000, 200, 1000, 200, 1000};
 
         //1 - vibrateAndSound all the time till canceled manually
         v.vibrate(pattern, 1);
     }
 
-    private void playAlertSound(){
+    private void playAlertSound() {
         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
         r.play();
@@ -482,5 +487,37 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         return false;
+    }
+
+    public void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select The Alert Sound");
+        builder.setMessage("Can't connect to server\n" + "May be some problems with connection or server\n");
+        builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(getApplication(), LauncherActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+                alertDialog.dismiss();
+            }
+
+        });
+        alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    public void unlockScreen() {
+        KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
+        kl.disableKeyguard();
+
+        PowerManager pm = (PowerManager)
+                getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+        wakeLock.acquire();
     }
 }
