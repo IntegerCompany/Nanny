@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -35,7 +36,6 @@ import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.todo.nanny.helperclasses.EpochTimer;
-import com.todo.nanny.helperclasses.VoiceTestDialog;
 import com.todo.nanny.services.ClientService;
 
 public class ClientActivity extends Activity implements View.OnTouchListener {
@@ -65,6 +65,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     EpochTimer epochTimer;
     long timeServerStart = 0;
     Vibrator v;
+    MediaPlayer mp;
 
     OnClickListener oclStop;
     OnClickListener oclStart;
@@ -198,8 +199,6 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     }
     private void initViewsById(){
 
-
-
         btnHelp = (Button) findViewById(R.id.btn_client_help);
         btnHelp.setOnClickListener(new OnClickListener() {
             @Override
@@ -238,8 +237,6 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
 
         editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
         editText1.setText(AppState.getIP());
-
-
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
         epochTimer = new EpochTimer((TextView) findViewById(R.id.tvChronometer));
         epochTimer.start();
@@ -275,11 +272,17 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
                         if (v != null){
                             v.cancel();
                         }
+                        if(mp != null){
+                            mp.stop();
+                        }
                         break;
                     case R.id.ibtn_confirm_voice_transfer:
                         confirmVoiceTransfer();
                         if (v != null){
                             v.cancel();
+                        }
+                        if(mp != null){
+                            mp.stop();
                         }
                         break;
                 }
@@ -335,6 +338,9 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
                 showSleepingScreen();
                 clientService.setNoiseCounter(0);
                 clientService.setIsLoudMessageSent(false);
+                if(mp != null){
+                    mp.stop(); 
+                }                
                 if (v != null) {
                     v.cancel();
                 }
@@ -374,7 +380,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
                     //button1.setText("Start");
                 }else if(intent.getAction().equals(getString(R.string.alarm_action))){
 
-                    vibrate();
+                    vibrateAndSound();
                     playAlertSound();
                     isAlarm = true;
                     wakeUpActivityAction();
@@ -423,7 +429,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     }
 
 
-    private void vibrate(){
+    private void vibrateAndSound(){
         KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
         kl.disableKeyguard();
@@ -436,6 +442,9 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         wakeLock.acquire();
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        mp = MediaPlayer.create(this, R.raw.alert_sound);
+        mp.start();
+        mp.setLooping(true);
 
         // Start without a delay
         // Vibrate for 100 milliseconds
@@ -444,8 +453,8 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
                 200,1000, 200,1000, 200,1000, 200,1000, 200,1000,
                 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,};
 
-        //-1 - vibrate 1 time
-        v.vibrate(pattern, -1);
+        //-1 - vibrateAndSound 1 time
+        v.vibrate(pattern, 1);
     }
 
     private void playAlertSound(){
