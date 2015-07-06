@@ -3,8 +3,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/pink_baby">
+    android:background="@color/blue_mom">
 
+
+    <ImageView
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:id="@+id/imageView4"
+        android:src="@drawable/circle_pink"
+        android:layout_centerInParent="true" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:layout_width="220dp"
@@ -18,40 +25,32 @@
         android:digits="0123456789."
         android:maxLength="15"
         android:hint="Enter ip here"
-        android:textSize="28dp"
+        android:textSize="28sp"
         android:layout_marginTop="40dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:id="@+id/et_enter_ip_here"
-        android:layout_centerHorizontal="true"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_centerInParent="true" />
 
     <ImageButton
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:id="@+id/ibtn_start"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/start_with_shadow"
+        android:background="@drawable/ic_start_button"
         android:layout_alignParentBottom="false"
         android:layout_marginBottom="16dp"
         android:visibility="visible"
         android:layout_alignParentTop="false"
-        android:layout_below="@+id/et_enter_ip_here" />
-
-    <ImageView
-        android:layout_width="210dp"
-        android:layout_height="210dp"
-        android:id="@+id/imageView4"
-        android:src="@drawable/mom_phone_p_b"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/ibtn_start" />
+        android:layout_below="@+id/imageView4" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/container_sleeping_baby_client"
         android:background="@color/pink_baby"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="300dp"
@@ -66,7 +65,7 @@
             android:layout_height="80dp"
             android:id="@+id/ibtn_pause_baby_listening"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/mute_with_shadow"
+            android:background="@drawable/ic_mute_button"
             android:layout_alignParentBottom="false"
             android:layout_marginBottom="16dp"
             android:visibility="visible"

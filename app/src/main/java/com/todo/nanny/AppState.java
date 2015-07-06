@@ -12,13 +12,8 @@ public class AppState {
 
     private static final String LOG_STATUS = "LogStatus" ;
 
-
-
     private static Context mContext;
     private static SharedPreferences sPrefLog;
-
-
-
 
     public static void setupAppState(Context context){
         mContext = context;
@@ -26,13 +21,12 @@ public class AppState {
     }
 
     public static boolean isIntroShowing(){
+        return sPrefLog.getBoolean("firstrun", true);
+    }
 
-        if (sPrefLog.getBoolean("firstrun", true)) {
-            sPrefLog.edit().putBoolean("firstrun", false).apply();
-            return true;
-        }
+    public static void introHasBeenShown(){
 
-        return false;
+        sPrefLog.edit().putBoolean("firstrun", false).apply();
     }
 
     public static void setSeekBarProgress(int progress){
@@ -56,5 +50,13 @@ public class AppState {
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         return mWifi.isConnected();
+    }
+
+    public static void setIpIntoMemory(String ip){
+        sPrefLog.edit().putString("ip_address",ip).apply();
+    }
+
+    public static String getLastIpFromMemory(){
+        return sPrefLog.getString("ip_address","");
     }
 }

@@ -68,8 +68,6 @@ public class ClientActivity extends Activity {
 
     Handler handler;
 
-    public int currentVolume;
-
     Button btnHelp;
 
 
@@ -84,8 +82,6 @@ public class ClientActivity extends Activity {
         // initialize layout variables
         initViewsById();
         startSignalListener();
-
-
 
         bindMyService();
 
@@ -214,7 +210,6 @@ public class ClientActivity extends Activity {
         //todo set max 3000
         sbVolume.setMax(40000);
         sbVolume.setProgress(AppState.getSeekBarProgress());
-
 
         tvVolume.setText("" + sbVolume.getProgress());
 
