@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -33,7 +34,6 @@ import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.todo.nanny.helperclasses.EpochTimer;
-import com.todo.nanny.helperclasses.VoiceTestDialog;
 import com.todo.nanny.services.ClientService;
 
 public class ClientActivity extends Activity {
@@ -63,6 +63,7 @@ public class ClientActivity extends Activity {
     EpochTimer epochTimer;
     long timeServerStart = 0;
     Vibrator v;
+    MediaPlayer mp;
 
     OnClickListener oclStop;
     OnClickListener oclStart;
@@ -328,6 +329,7 @@ public class ClientActivity extends Activity {
                 showSleepingScreen();
                 clientService.setNoiseCounter(0);
                 clientService.setIsLoudMessageSent(false);
+                mp.stop();
             }
         });
 
@@ -364,7 +366,7 @@ public class ClientActivity extends Activity {
                     //button1.setText("Start");
                 }else if(intent.getAction().equals(getString(R.string.alarm_action))){
 
-                    vibrate();
+                    vibrateAndSound();
                     playAlertSound();
                     isAlarm = true;
                     wakeUpActivityAction();
@@ -413,7 +415,7 @@ public class ClientActivity extends Activity {
     }
 
 
-    private void vibrate(){
+    private void vibrateAndSound(){
         KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
         kl.disableKeyguard();
@@ -426,13 +428,16 @@ public class ClientActivity extends Activity {
         wakeLock.acquire();
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        mp = MediaPlayer.create(this, R.raw.alert_sound);
+        mp.start();
+        mp.setLooping(true);
 
         // Start without a delay
         // Vibrate for 100 milliseconds
         // Sleep for 50 milliseconds
         long[] pattern = {0, 1000, 200};
 
-        //-1 - vibrate 1 time
+        //-1 - vibrateAndSound 1 time
         v.vibrate(pattern, 1);
     }
 
