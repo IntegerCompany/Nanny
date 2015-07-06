@@ -3,7 +3,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue_mom">
+    android:background="@color/blue_mom"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:id="@+id/activity_main_layout_main">
 
 
     <ImageView
@@ -31,7 +34,9 @@
         android:layout_marginRight="16dp"
         android:id="@+id/et_enter_ip_here"
         android:textStyle="bold"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:nextFocusUp="@id/et_enter_ip_here"
+        android:nextFocusLeft="@id/et_enter_ip_here"/>
 
     <ImageButton
         android:layout_width="80dp"
@@ -50,7 +55,8 @@
         android:layout_height="match_parent"
         android:id="@+id/container_sleeping_baby_client"
         android:background="@color/pink_baby"
-        android:visibility="gone">
+        android:visibility="gone"
+        >
 
         <ImageView
             android:layout_width="300dp"

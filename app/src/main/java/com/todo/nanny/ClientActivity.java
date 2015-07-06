@@ -22,8 +22,10 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -36,7 +38,7 @@ import com.todo.nanny.helperclasses.EpochTimer;
 import com.todo.nanny.helperclasses.VoiceTestDialog;
 import com.todo.nanny.services.ClientService;
 
-public class ClientActivity extends Activity {
+public class ClientActivity extends Activity implements View.OnTouchListener {
 
     //Cry baby view
     ImageButton pauseBabyListening;
@@ -78,6 +80,7 @@ public class ClientActivity extends Activity {
         super.onCreate(savedInstanceState);
         ctx = getApplicationContext();
         setContentView(R.layout.activity_main);
+        findViewById(R.id.activity_main_layout_main).setOnTouchListener(this);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // initialize layout variables
@@ -195,6 +198,8 @@ public class ClientActivity extends Activity {
     }
     private void initViewsById(){
 
+
+
         btnHelp = (Button) findViewById(R.id.btn_client_help);
         btnHelp.setOnClickListener(new OnClickListener() {
             @Override
@@ -233,6 +238,8 @@ public class ClientActivity extends Activity {
 
         editText1 = (MaterialEditText) findViewById(R.id.et_enter_ip_here);
         editText1.setText(AppState.getIP());
+
+
         ibtnStart = (ImageButton) findViewById(R.id.ibtn_start);
         epochTimer = new EpochTimer((TextView) findViewById(R.id.tvChronometer));
         epochTimer.start();
@@ -328,6 +335,9 @@ public class ClientActivity extends Activity {
                 showSleepingScreen();
                 clientService.setNoiseCounter(0);
                 clientService.setIsLoudMessageSent(false);
+                if (v != null) {
+                    v.cancel();
+                }
             }
         });
 
@@ -430,10 +440,12 @@ public class ClientActivity extends Activity {
         // Start without a delay
         // Vibrate for 100 milliseconds
         // Sleep for 50 milliseconds
-        long[] pattern = {0, 1000, 200};
+        long[] pattern = {0, 1000, 200,1000, 200,1000, 200,1000,
+                200,1000, 200,1000, 200,1000, 200,1000, 200,1000,
+                200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,};
 
         //-1 - vibrate 1 time
-        v.vibrate(pattern, 1);
+        v.vibrate(pattern, -1);
     }
 
     private void playAlertSound(){
@@ -442,4 +454,10 @@ public class ClientActivity extends Activity {
         r.play();
     }
 
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        return false;
+    }
 }
