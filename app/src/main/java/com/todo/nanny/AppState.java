@@ -51,5 +51,13 @@ public class AppState {
 
         return mWifi.isConnected();
     }
+
+    public static int getCurrentSound() {
+        return sPrefLog.getInt("soundId", R.raw.alert_sound);
+    }
+
+    public static void setCurrentSound(int currentSound) {
+        sPrefLog.edit().putInt("soundId", currentSound).apply();
+    }
 }
 

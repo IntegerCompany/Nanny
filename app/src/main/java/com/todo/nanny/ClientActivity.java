@@ -73,6 +73,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
     Handler handler;
 
     Button btnHelp;
+    private boolean doubleBackToExitPressedOnce;
 
 
     /** Called when the activity is first created. */
@@ -141,13 +142,26 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         return WifiManager.calculateSignalLevel(wifiInfo.getRssi(), 6);
     }
 
-    @Override
+
     public void onBackPressed() {
         Log.d("ServerActivity", "onBackPressed");
-        Intent intent = new Intent(getApplication(),LauncherActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
+        if (doubleBackToExitPressedOnce) {
+            Intent intent = new Intent(getApplication(),LauncherActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 
     private void showAlarmScreen() {
@@ -442,7 +456,7 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         wakeLock.acquire();
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        mp = MediaPlayer.create(this, R.raw.alert_sound);
+        mp = MediaPlayer.create(this, AppState.getCurrentSound());
         mp.start();
         mp.setLooping(true);
 
@@ -451,9 +465,9 @@ public class ClientActivity extends Activity implements View.OnTouchListener {
         // Sleep for 50 milliseconds
         long[] pattern = {0, 1000, 200,1000, 200,1000, 200,1000,
                 200,1000, 200,1000, 200,1000, 200,1000, 200,1000,
-                200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,};
+                200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000, 200,1000};
 
-        //-1 - vibrateAndSound 1 time
+        //1 - vibrateAndSound all the time till canceled manually
         v.vibrate(pattern, 1);
     }
 

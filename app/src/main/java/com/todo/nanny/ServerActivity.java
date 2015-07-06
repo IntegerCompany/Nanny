@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.text.format.Formatter;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.todo.nanny.helperclasses.VoiceTestDialog;
@@ -48,6 +50,7 @@ public class ServerActivity extends Activity {
     VoiceTestDialog voiceTestDialog;
 
     Button btnTestVolume,btnHelp;
+    private boolean doubleBackToExitPressedOnce;
 
 
     /**
@@ -227,13 +230,26 @@ public class ServerActivity extends Activity {
         unbindService(serviceConnection);
     }
 
-    @Override
     public void onBackPressed() {
         Log.d("ServerActivity", "onBackPressed");
-        Intent intent = new Intent(getApplication(),LauncherActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
+        if (doubleBackToExitPressedOnce) {
+            Intent intent = new Intent(getApplication(),LauncherActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 
 
