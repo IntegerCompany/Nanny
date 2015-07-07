@@ -37,7 +37,7 @@ public class ClientService extends Service {
     int reconnectionAttempt = 0;
     boolean isFirstConnect = true;
 
-    int maxVolume = 20000;
+    int maxVolume = AppState.getSeekBarProgress();
 
 
     //Used to count voice volume from server

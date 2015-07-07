@@ -227,7 +227,7 @@ public class ServerService extends Service {
                 Log.d("ServerService", "Can't start");
                 isRecorderBroken = true;
                 stop();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
